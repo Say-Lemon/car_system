@@ -206,6 +206,5 @@ static void sidebar_ac_cb(lv_event_t *e)
 static void sidebar_app_menu_cb(lv_event_t *e)
 {
     (void)e;
-    printf("[Sidebar] 菜单 → 应用选择\n");
-    app_menu_ui_create();
+    app_menu_ui_toggle();
 }

@@ -113,6 +113,9 @@ void car_ui_dashboard_update_volume(int vol)
 static void dashboard_refresh_timer_cb(lv_timer_t *t)
 {
     (void)t;
+    /* 视频播放时 mplayer 直接写 framebuffer，LVGL 刷新会导致闪烁 */
+    if (g_video_overlay_active) return;
+
     int speed, fuel, rpm;
     pthread_mutex_lock(&g_can_mutex);
     speed = g_speed_kmh;

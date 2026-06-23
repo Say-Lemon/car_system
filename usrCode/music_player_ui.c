@@ -137,13 +137,13 @@ lv_obj_t *music_player_ui_create(void)
     lv_obj_t *cb = lv_btn_create(card);
     lv_obj_set_size(cb, 36, 36);
     lv_obj_align(cb, LV_ALIGN_TOP_RIGHT, 0, 13);
-    lv_obj_set_style_bg_opa(cb, LV_OPA_TRANSP, 0);
-    lv_obj_set_style_border_width(cb, 0, 0);
+    lv_obj_set_style_bg_color(cb, lv_color_hex(0xFF6D00), 0);
+    lv_obj_set_style_radius(cb, 6, 0);
     lv_obj_set_style_shadow_width(cb, 0, 0);
     lv_obj_t *cl = lv_label_create(cb);
     lv_label_set_text(cl, LV_SYMBOL_CLOSE);
     lv_obj_center(cl);
-    lv_obj_set_style_text_color(cl, lv_color_hex(0x888888), 0);
+    lv_obj_set_style_text_color(cl, lv_color_white(), 0);
     lv_obj_add_event_cb(cb, on_close, LV_EVENT_CLICKED, NULL);
 
     /* 歌名 */

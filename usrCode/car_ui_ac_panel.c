@@ -20,6 +20,7 @@
 
 #include "car_ui_ac_panel.h"
 #include "car_ui_dashboard.h"
+#include "app_menu_ui.h"
 #include "app_config.h"
 #include "font_zh_cn.h"
 #include "lvgl/lvgl.h"
@@ -108,7 +109,7 @@ void car_ui_ac_panel_create(lv_obj_t *parent)
     /* 温度数值（居中大字） */
     temp_label = lv_label_create(temp_section);
     lv_label_set_text_fmt(temp_label, "温度  %d °C", g_ac_temperature);
-    lv_obj_align(temp_label, LV_ALIGN_TOP_MID, 0, 30);
+    lv_obj_align(temp_label, LV_ALIGN_TOP_MID, 0, 50);
     lv_obj_set_style_text_color(temp_label, lv_color_white(), 0);
     APPLY_ZH_18(temp_label);
 
@@ -145,7 +146,7 @@ void car_ui_ac_panel_create(lv_obj_t *parent)
     /* 风量数值 */
     fan_label = lv_label_create(fan_section);
     lv_label_set_text_fmt(fan_label, "风量  %d 档", g_ac_fan_speed);
-    lv_obj_align(fan_label, LV_ALIGN_TOP_MID, 0, 30);
+    lv_obj_align(fan_label, LV_ALIGN_TOP_MID, 0, 50);
     lv_obj_set_style_text_color(fan_label, lv_color_white(), 0);
     APPLY_ZH_18(fan_label);
 
@@ -269,9 +270,17 @@ void car_ui_ac_panel_toggle(void)
         lv_obj_clear_flag(g_dashboard_cont, LV_OBJ_FLAG_HIDDEN);
         printf("[AC] 切换到仪表盘\n");
     } else {
-        /* 当前显示仪表盘 → 隐藏仪表盘，显示空调 */
+        /* 显示空调，隐藏仪表盘和应用菜单 */
         lv_obj_add_flag(g_dashboard_cont, LV_OBJ_FLAG_HIDDEN);
+        app_menu_ui_hide();
         lv_obj_clear_flag(ac_cont, LV_OBJ_FLAG_HIDDEN);
         printf("[AC] 切换到空调面板\n");
+    }
+}
+
+void car_ui_ac_panel_hide(void)
+{
+    if (ac_cont) {
+        lv_obj_add_flag(ac_cont, LV_OBJ_FLAG_HIDDEN);
     }
 }

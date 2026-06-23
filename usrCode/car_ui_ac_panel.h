@@ -16,4 +16,7 @@ void car_ui_ac_panel_create(lv_obj_t *parent);
 /** 切换仪表盘 ↔ 空调面板可见性 */
 void car_ui_ac_panel_toggle(void);
 
+/** 隐藏空调面板（供 menu toggle 互斥调用） */
+void car_ui_ac_panel_hide(void);
+
 #endif /* CAR_UI_AC_PANEL_H */
