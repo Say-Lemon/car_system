@@ -1,0 +1,33 @@
+# Compiled binary
+car_system
+
+# Object files
+*.o
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# clangd cache
+.clangd/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+*.out
+*.a
+*.so
+
+# Debug
+*.gdb
+
+# Large media test files
+music/*.mp3
+
+# Document extraction artifacts
+document.xml

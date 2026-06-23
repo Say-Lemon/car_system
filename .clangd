@@ -1,0 +1,18 @@
+# clangd configuration for ARM cross-compilation project
+# clangd reads compile_commands.json for per-file flags;
+# this file adds project-wide adjustments.
+
+CompileFlags:
+  Add:
+    # Point clangd at the ARM cross-compiler sysroot for system headers
+    - --sysroot=/usr/local/arm/5.4.0/usr/arm-none-linux-gnueabi/sysroot
+    # Use a compatible target triple
+    - --target=armv7-none-linux-gnueabi
+  Remove:
+    # clangd doesn't understand -g0; remove it to suppress warnings
+    - -g0
+
+Diagnostics:
+  # Suppress noisy cross-compilation warnings that don't affect correctness
+  UnusedIncludes: None
+  MissingIncludes: None
