@@ -18,6 +18,7 @@
 #include "car_ui_dashboard.h"
 #include "car_ui_status.h"
 #include "car_ui_music_bar.h"
+#include "car_ui_ac_panel.h"
 #include "app_config.h"
 #include "lvgl/lvgl.h"
 
@@ -39,6 +40,7 @@ void car_ui_create_dashboard(void)
     /* 创建各子区域（它们自身会设置位置和尺寸） */
     car_ui_sidebar_create(scr);
     car_ui_dashboard_create(scr);
+    car_ui_ac_panel_create(scr);   /* 空调面板——初始隐藏 */
     car_ui_status_create(scr);
     car_ui_music_bar_create(scr);
 }

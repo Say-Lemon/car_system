@@ -23,6 +23,7 @@
 #include "music_controller.h"
 #include "app_menu_ui.h"
 #include "car_ui_dashboard.h"
+#include "car_ui_ac_panel.h"
 #include "lvgl/lvgl.h"
 
 /* 雪花图标使用 26px 独立字体（更大更清晰） */
@@ -199,7 +200,7 @@ static void sidebar_vol_down_cb(lv_event_t *e)
 static void sidebar_ac_cb(lv_event_t *e)
 {
     (void)e;
-    printf("[Sidebar] 空调按钮被点击\n");
+    car_ui_ac_panel_toggle();
 }
 
 static void sidebar_app_menu_cb(lv_event_t *e)

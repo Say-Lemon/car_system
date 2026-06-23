@@ -83,6 +83,13 @@ extern bool g_music_paused;
 extern bool g_music_interrupted_by_video;
 
 /* ================================================
+ *  空调控制状态（Phase 5）—— 模拟数据
+ * ================================================ */
+extern int g_ac_temperature;    /* 温度 16-32 °C，默认 24 */
+extern int g_ac_fan_speed;      /* 风量 1-7 档，默认 3 */
+extern int g_ac_mode;           /* 模式 0=吹面 1=吹脚 2=吹面+吹脚 3=除霜 */
+
+/* ================================================
  *  CAN 模拟数据（Phase 4）—— 由 can_simulator 线程更新
  * ================================================ */
 extern pthread_mutex_t g_can_mutex;

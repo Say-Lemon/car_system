@@ -61,6 +61,11 @@ int g_auto_screen_off_sec = 30;
 /* 视频/音乐互斥标志：视频打开时若音乐正在播放则暂停，视频关闭后自动续播 */
 bool g_music_interrupted_by_video = false;
 
+/* 空调控制状态（Phase 5 模拟数据） */
+int g_ac_temperature = 24;   /* 16-32 °C */
+int g_ac_fan_speed   = 3;    /* 1-7 档 */
+int g_ac_mode         = 0;   /* 0=吹面 1=吹脚 2=吹面+吹脚 3=除霜 */
+
 /* ========== 程序入口 ========== */
 int main(void)
 {

@@ -14,6 +14,7 @@
 /* 嵌入的 car.png 图片数据 */
 extern const lv_img_dsc_t car_img;
 
+lv_obj_t *g_dashboard_cont;
 lv_obj_t *g_label_speed;
 lv_obj_t *g_label_speed_unit;
 lv_obj_t *g_label_fuel;
@@ -26,35 +27,35 @@ static void dashboard_refresh_timer_cb(lv_timer_t *t);
 void car_ui_dashboard_create(lv_obj_t *parent)
 {
     /* ---- 外层容器 ---- */
-    lv_obj_t *cont = lv_obj_create(parent);
-    lv_obj_set_size(cont, CENTER_W, ZONE_H);
-    lv_obj_set_pos(cont, MARGIN + SIDEBAR_W + GAP, MARGIN);
-    lv_obj_set_style_bg_color(cont, lv_color_hex(0x0A0A1A), 0);
-    lv_obj_set_style_border_width(cont, 0, 0);
-    lv_obj_set_style_radius(cont, 12, 0);
-    lv_obj_set_style_clip_corner(cont, true, 0);
-    lv_obj_set_style_pad_all(cont, 0, 0);
+    g_dashboard_cont = lv_obj_create(parent);
+    lv_obj_set_size(g_dashboard_cont, CENTER_W, ZONE_H);
+    lv_obj_set_pos(g_dashboard_cont, MARGIN + SIDEBAR_W + GAP, MARGIN);
+    lv_obj_set_style_bg_color(g_dashboard_cont, lv_color_hex(0x0A0A1A), 0);
+    lv_obj_set_style_border_width(g_dashboard_cont, 0, 0);
+    lv_obj_set_style_radius(g_dashboard_cont, 12, 0);
+    lv_obj_set_style_clip_corner(g_dashboard_cont, true, 0);
+    lv_obj_set_style_pad_all(g_dashboard_cont, 0, 0);
 
     /* ---- 嵌入图片 ---- */
-    lv_obj_t *img = lv_img_create(cont);
+    lv_obj_t *img = lv_img_create(g_dashboard_cont);
     lv_img_set_src(img, &car_img);
     lv_obj_set_size(img, CENTER_W, ZONE_H);
     lv_obj_align(img, LV_ALIGN_CENTER, 0, 0);
 
     /* ---- 车速：大号数字 + 单位（无底色） ---- */
-    g_label_speed = lv_label_create(cont);
+    g_label_speed = lv_label_create(g_dashboard_cont);
     lv_label_set_text(g_label_speed, "0");
     lv_obj_align(g_label_speed, LV_ALIGN_CENTER, 0, -160);
     lv_obj_set_style_text_color(g_label_speed, lv_color_white(), 0);
     lv_obj_set_style_text_font(g_label_speed, &lv_font_montserrat_48, 0);
 
-    g_label_speed_unit = lv_label_create(cont);
+    g_label_speed_unit = lv_label_create(g_dashboard_cont);
     lv_label_set_text(g_label_speed_unit, "KM/H");
     lv_obj_align(g_label_speed_unit, LV_ALIGN_CENTER, 0, -120);
     lv_obj_set_style_text_color(g_label_speed_unit, lv_color_hex(0xCCCCCC), 0);
     lv_obj_set_style_text_font(g_label_speed_unit, &lv_font_montserrat_16, 0);
     /* ---- 油量：左下角（无底色，稍大字体） ---- */
-    g_label_fuel = lv_label_create(cont);
+    g_label_fuel = lv_label_create(g_dashboard_cont);
     lv_label_set_text(g_label_fuel, "油量 80%");
     lv_obj_align(g_label_fuel, LV_ALIGN_BOTTOM_LEFT, 15, -15);
     lv_obj_set_style_text_color(g_label_fuel, lv_color_hex(0x4CAF50), 0);
@@ -62,7 +63,7 @@ void car_ui_dashboard_create(lv_obj_t *parent)
     APPLY_ZH_18(g_label_fuel);
 
     /* ---- 音量：底部居中 ---- */
-    g_label_volume = lv_label_create(cont);
+    g_label_volume = lv_label_create(g_dashboard_cont);
     lv_label_set_text(g_label_volume, "音量 10%");
     lv_obj_align(g_label_volume, LV_ALIGN_BOTTOM_MID, 0, -15);
     lv_obj_set_style_text_color(g_label_volume, lv_color_hex(0xFFC107), 0);
@@ -70,7 +71,7 @@ void car_ui_dashboard_create(lv_obj_t *parent)
     APPLY_ZH_18(g_label_volume);
 
     /* ---- 转速：右下角（无底色，稍大字体） ---- */
-    g_label_rpm = lv_label_create(cont);
+    g_label_rpm = lv_label_create(g_dashboard_cont);
     lv_label_set_text(g_label_rpm, "转速 800 RPM");
     lv_obj_align(g_label_rpm, LV_ALIGN_BOTTOM_RIGHT, -15, -15);
     lv_obj_set_style_text_color(g_label_rpm, lv_color_hex(0x2196F3), 0);

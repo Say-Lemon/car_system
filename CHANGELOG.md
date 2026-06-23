@@ -1,17 +1,50 @@
 # 智能车机项目 (car_system) — 开发日志
 
+## 2026-06-23 (续4) — Phase 5: 空调控制面板
+
+### 空调控制 UI
+- 创建 `car_ui_ac_panel.c/h` — 中间区域（440×460）空调控制面板
+- 控件布局：
+  - **温度**：大号数值显示（28px 白字）+ 滑块（16-32 °C），橙色风格
+  - **风量**：数值显示（24px 白字）+ 滑块（1-7 档），橙色风格
+  - **模式**：2×2 按钮网格（吹面/吹脚/吹面+吹脚/除霜），选中态橙色底 `#FF6D00`+白字
+- UI 风格：`#1A1A2E` 深底 + `#FF6D00` 橙色 + 圆角 12px，与主界面一致
+
+### 仪表盘 ↔ 空调切换
+- `g_dashboard_cont` 暴露仪表盘容器句柄
+- 点击侧边栏 ❄ → `car_ui_ac_panel_toggle()` 切换仪表盘/空调面板可见性
+- 空调面板初始隐藏，启动时预创建；切换时两者互斥显示
+
+### 空调数据模型（模拟）
+- `g_ac_temperature` — 16-32 °C，默认 24
+- `g_ac_fan_speed` — 1-7 档，默认 3
+- `g_ac_mode` — 0=吹面 1=吹脚 2=吹面+吹脚 3=除霜
+
+### 修改文件
+- `car_ui_ac_panel.c` — **新建**：空调面板 UI + 滑块/按钮回调 + toggle 逻辑
+- `car_ui_ac_panel.h` — **新建**：`create` + `toggle` 声明
+- `car_ui_dashboard.c` — 容器 `g_dashboard_cont` 全局化
+- `car_ui_dashboard.h` — 声明 `g_dashboard_cont`
+- `car_ui_sidebar.c` — `sidebar_ac_cb` 调用 toggle
+- `car_ui.c` — 启动时创建空调面板（初始隐藏）
+- `app_config.h` — 新增 `g_ac_temperature/fan_speed/mode` 声明
+- `main.c` — 定义 AC 全局变量
+
+---
+
 ## 2026-06-23 (续3) — Phase 4: CAN 数据模拟
 
 ### 驾驶循环模拟
 - 创建 `can_simulator.c/h` — 后台线程模拟 CAN 总线数据
-- 驾驶状态机：IDLE(怠速) → ACCELERATING(加速) → CRUISING(巡航) → DECELERATING(减速)
+- 驾驶状态机：IDLE(熄火) → ACCELERATING(加速) → CRUISING(巡航) → DECELERATING(减速)
   - 加速：每 tick +2~5 km/h，随机目标 80~120 km/h
   - 巡航：±1 km/h 波动，持续 3~8 秒
-  - 减速：每 tick -2~5 km/h，至 0 转入怠速
-  - 怠速：speed=0，持续 2~5 秒后重新起步
-- 转速：`RPM = speed × 55 + 800 + rand(-100,+100)`，怠速 ~800 RPM，高速 ~6300 RPM
-- 油耗：每 tick 消耗与转速正相关，约 1-3%/分钟，最低 5%
+  - 减速：每 tick -2~5 km/h，至 0 转入熄火
+  - 熄火：speed=0，持续 2~5 秒后重新起步
+- 转速：`RPM = speed × 55 + rand(-100,+100)`，熄火时 RPM=0，高速 ~6600 RPM
+- 油耗：仅行驶中消耗 `0.005 + (RPM/4000)×0.01` 每 tick（200ms），熄火不耗油；约 1.5%/min(低速)~6%/min(高速)，最低 5%
 - 更新周期 200ms（5Hz），通过 `g_can_mutex` 保护共享数据
+- 用自包含 LCG 伪随机（避免 `rand()` 的线程安全隐患）
 
 ### 仪表盘实时刷新
 - `car_ui_dashboard.c` 新增 200ms LVGL 刷新定时器

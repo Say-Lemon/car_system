@@ -80,11 +80,13 @@ static void *can_simulator_thread(void *arg)
             if (g_engine_rpm > 7000) g_engine_rpm = 7000;
         }
 
-        /* ---- 计算油耗（约 1-6%/min，与转速正相关） ---- */
-        float rpm_factor = (float)g_engine_rpm / 4000.0f;
-        g_fuel_accum -= 0.005f + rpm_factor * 0.01f;  /* 每 tick 消耗 */
-        if (g_fuel_accum < 5.0f) g_fuel_accum = 5.0f;
-        g_fuel_percent = (int)g_fuel_accum;
+        /* ---- 计算油耗（行驶中才消耗，熄火不耗油） ---- */
+        if (g_speed_kmh > 0) {
+            float rpm_factor = (float)g_engine_rpm / 4000.0f;
+            g_fuel_accum -= 0.005f + rpm_factor * 0.01f;  /* 每 tick 消耗 */
+            if (g_fuel_accum < 5.0f) g_fuel_accum = 5.0f;
+            g_fuel_percent = (int)g_fuel_accum;
+        }
 
         pthread_mutex_unlock(&g_can_mutex);
 

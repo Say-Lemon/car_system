@@ -23,7 +23,7 @@ LV_FONT_DECLARE(zh_cn_font);
 #define APPLY_ZH_FONT(obj)  lv_obj_set_style_text_font((obj), &zh_cn_font, 0)
 
 /* 18px */
-LV_FONT_DECLARE(zh_cn_18);
-#define APPLY_ZH_18(obj)  lv_obj_set_style_text_font((obj), &zh_cn_18, 0)
+LV_FONT_DECLARE(font_zh_cn_18);
+#define APPLY_ZH_18(obj)  lv_obj_set_style_text_font((obj), &font_zh_cn_18, 0)
 
 #endif

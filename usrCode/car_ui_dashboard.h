@@ -14,6 +14,9 @@
 /** 在 parent 内创建中间仪表盘区域（包含 CAN 数据刷新定时器） */
 void car_ui_dashboard_create(lv_obj_t *parent);
 
+/** 仪表盘容器句柄（Phase 5 AC toggle 隐藏/显示） */
+extern lv_obj_t *g_dashboard_cont;
+
 /** 数据标签句柄（Phase 4 外部更新） */
 extern lv_obj_t *g_label_speed;
 extern lv_obj_t *g_label_speed_unit;  /* KM/H 单位标签 */
