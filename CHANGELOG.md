@@ -337,24 +337,87 @@
 
 ---
 
+## 2026-06-24 — Phase 6: 网络通信集成
+
+### 网络客户端
+- 创建 `network_client.c/h` — TCP 客户端线程，连接 `192.168.137.1:8888` 接收 JSON 天气数据
+- 参照 `can_simulator.c` 模式: detached 线程 + mutex + lv_async_call
+- 自动重连机制：连接失败/断开后每 3 秒重试，不影响其他模块
+- cJSON 库集成：下载 v1.7.18 到 `usrCode/cJSON/`，Makefile 已有 include 路径
+
+### JSON 协议
+- 服务器每 5 秒发送一行: `{"weather":"晴","temp":28,"location":"番禺"}`
+- 字段: weather(天气描述), temp(温度℃), location(城市名)
+- cJSON 解析在锁外完成，仅 strncpy/int 赋值在 g_net_mutex 临界区内
+
+### 天气服务器
+- 创建 `scripts/weather_server.py` — Python TCP 服务器
+- 8 种天气场景循环轮换（晴/多云/阴/小雨/阵雨/雷阵雨 × 广州/番禺/深圳）
+- WSL2 网络隔离解决：Windows 端口转发 `netsh interface portproxy` + 防火墙放行
+
+### UI 刷新保护
+- `ui_refresh_status_labels()` 首次被实际调用（此前已实现但从未使用）
+- 新增 `g_video_overlay_active` 检查：视频播放时跳过天气刷新，避免 fbdev_flush 冲突闪烁
+
+### 字体更新
+- 天气数据引入新汉字（广州阴阵雷圳）→ `font_zh_cn_18.c` 重新生成
+- **教训**：必须用原始字体 `NotoSansSC-VF.ttf` + 原始符号集 + 追加新字，换用 simhei 会丢失 ♫♪❄ 等图标
+
+### 代码清理
+- `car_ui.c/h` 删除 4 个未使用的静态变量和 getter 函数（死代码）
+- `CHANGELOG.md` 和 `DASHBOARD_DEBUG.md` 文件清单更新为 Phase 5 完整状态
+
+### 新增文件
+- `usrCode/network_client.c/h` — TCP 网络客户端
+- `usrCode/cJSON/cJSON.c/h` — JSON 解析库
+- `scripts/weather_server.py` — 测试用天气服务器
+
+### 修改文件
+- `usrCode/main.c` — +2 行集成网络线程
+- `usrCode/car_ui_status.c` — g_video_overlay_active 保护
+- `usrCode/car_ui.c/h` — 清理死代码
+- `usrCode/font_zh_cn_18.c` — 追加 6 个汉字
+- `usrCode/font_symbols.txt` — 同步更新
+
+---
+
 ## 文件清单
 
 ```
 usrCode/
-├── main.c                    # 入口
-├── app_config.h              # 公共配置
-├── car_ui.c/h                # 布局编排
-├── car_ui_sidebar.c/h        # 侧边栏
-├── car_ui_dashboard.c/h      # 仪表盘
-├── car_ui_status.c/h         # 时间天气
-├── car_ui_music_bar.c/h      # 迷你音乐栏
-├── music_catalog.c/h         # 音乐扫描
-├── music_controller.c/h      # 播放核心
-├── music_player_ui.c/h       # 全屏播放器
-├── font_zh_cn.c/h            # 中文16px
-├── font_zh_cn_14.c           # 中文14px
-├── font_zh_cn_18.c           # 中文18px
-├── font_icons_20.c/h         # 图标20px
-├── font_snowflake_26.c       # 雪花26px
-└── car_img_data.c            # 仪表盘背景图
+├── main.c                         # 入口 — LVGL/fbdev/evdev 初始化 + 主循环
+├── app_config.h                   # 公共配置 — 布局宏、全局状态、FIFO 路径
+│
+├── car_ui.c/h                     # 布局编排器 — 调用各子模块组装主界面
+├── car_ui_sidebar.c/h             # 侧边栏 — 5 圆形图标按钮 (70×460)
+├── car_ui_dashboard.c/h           # 仪表盘 — 车速/油量/转速 + CAN 刷新 (440×460)
+├── car_ui_ac_panel.c/h            # 空调面板 — 温度/风量滑块 + 吹风模式 (Phase 5)
+├── app_menu_ui.c/h                # 应用菜单 — 2×2 应用网格 (Phase 5)
+├── car_ui_status.c/h              # 右上状态 — 时间/日期/天气 (250×140)
+├── car_ui_music_bar.c/h           # 右下音乐栏 — 歌名/进度/播放控制 (250×310)
+│
+├── music_catalog.c/h              # 音乐目录扫描 — /mmcblk/music → mp3 列表
+├── music_controller.c/h           # 音乐播放核心 — fork+pipe + 读写线程
+├── music_player_ui.c/h            # 全屏音乐播放器 — 左控制 + 右列表
+│
+├── vp_config.h                    # 视频播放器配置 — FIFO 路径、头文件
+├── vp_media_catalog.c/h           # 视频目录扫描 — /mmcblk/video → 视频列表
+├── vp_playback_controller.c/h     # 视频播放引擎 — fork+pipe + mplayer 管理
+├── vp_playback_io_sync.c/h        # 视频 I/O 同步 — 读写线程 + 信号/cond 协调
+├── vp_playback_monitor.c/h        # 视频状态解析 — ANS_* 应答 → 进度/时间
+├── vp_player_ui.c/h               # 视频播放器 UI — 控制栏/进度条/列表
+│
+├── can_simulator.c/h              # CAN 数据模拟 — 驾驶循环状态机 (Phase 4)
+├── network_client.c/h              # TCP 网络客户端 — JSON 天气数据接收 (Phase 6)
+├── cJSON/cJSON.c/h                 # JSON 解析库 — v1.7.18 (Phase 6)
+│
+├── font_zh_cn.c/h                 # 中文 16px — zh_cn_font + APPLY_ZH_FONT 宏
+├── font_zh_cn_14.c                # 中文 14px — zh_cn_14 + APPLY_ZH_14 宏
+├── font_zh_cn_16.c                # 中文 16px — font_zh_cn_16（未使用）
+├── font_zh_cn_18.c                # 中文 18px — font_zh_cn_18 + APPLY_ZH_18 宏
+├── font_icons_20.c/h              # 图标 20px — Segoe MDL2 (电源/音量)
+├── font_snowflake_26.c            # 雪花 26px — ❄ 空调图标
+├── font_symbols.txt               # 字体字符清单 — 562 汉字 + 符号
+│
+└── car_img_data.c                 # 仪表盘背景图 — 440×460 BGRA 嵌入式数组
 ```

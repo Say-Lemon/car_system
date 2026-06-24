@@ -24,6 +24,7 @@
 #include "car_ui.h"
 #include "music_catalog.h"
 #include "can_simulator.h"
+#include "network_client.h"
 #include "app_config.h"
 #include <unistd.h>
 #include <pthread.h>
@@ -113,6 +114,9 @@ int main(void)
 
     /* ---- 10. 启动 CAN 数据模拟线程 ---- */
     can_simulator_start();
+
+    /* ---- 11. 启动网络数据接收线程 ---- */
+    network_client_start();
 
     printf("[Main] 智能车机系统启动完成\n");
 

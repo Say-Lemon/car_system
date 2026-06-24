@@ -4,11 +4,13 @@
  *
  * 调用顺序：
  *   car_ui_create_dashboard()
- *     ├── 创建 screen-size 透明根容器（800×480）
- *     ├── car_ui_sidebar_create(root)      → 左侧栏
- *     ├── car_ui_dashboard_create(root)    → 中间仪表盘
- *     ├── car_ui_status_create(root)       → 右上状态
- *     └── car_ui_music_bar_create(root)    → 右下音乐栏
+ *     ├── 设置屏幕背景色（0x0A0A1A）
+ *     ├── car_ui_sidebar_create(scr)        → 左侧栏 70×460
+ *     ├── car_ui_dashboard_create(scr)      → 中间仪表盘 440×460
+ *     ├── car_ui_ac_panel_create(scr)       → 空调面板（初始隐藏）
+ *     ├── app_menu_ui_create(scr)           → 应用菜单（初始隐藏）
+ *     ├── car_ui_status_create(scr)         → 右上状态 250×140
+ *     └── car_ui_music_bar_create(scr)      → 右下音乐栏 250×310
  *
  * 各子模块自行决定内部容器位置（绝对坐标），编排器只负责提供父容器。
  */
@@ -22,12 +24,6 @@
 #include "app_menu_ui.h"
 #include "app_config.h"
 #include "lvgl/lvgl.h"
-
-/* ========== 内部持有的区域容器句柄 ========== */
-static lv_obj_t *sidebar_cont;
-static lv_obj_t *center_cont;
-static lv_obj_t *status_cont;
-static lv_obj_t *music_bar_cont;
 
 /* ========== 创建仪表盘 ========== */
 void car_ui_create_dashboard(void)
@@ -47,24 +43,3 @@ void car_ui_create_dashboard(void)
     car_ui_music_bar_create(scr);
 }
 
-/* ========== 区域容器查询 ========== */
-
-lv_obj_t *car_ui_get_sidebar_cont(void)
-{
-    return sidebar_cont;
-}
-
-lv_obj_t *car_ui_get_center_cont(void)
-{
-    return center_cont;
-}
-
-lv_obj_t *car_ui_get_status_cont(void)
-{
-    return status_cont;
-}
-
-lv_obj_t *car_ui_get_music_bar_cont(void)
-{
-    return music_bar_cont;
-}

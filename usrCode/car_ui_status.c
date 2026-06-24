@@ -112,6 +112,9 @@ void car_ui_status_create(lv_obj_t *parent)
 void ui_refresh_status_labels(void *user_data)
 {
     (void)user_data;
+    /* 视频播放时 mplayer 直接写 framebuffer，LVGL 刷新会导致闪烁 */
+    if (g_video_overlay_active) return;
+
     pthread_mutex_lock(&g_net_mutex);
     lv_label_set_text_fmt(g_label_weather, "%s  %d°  %s",
                           g_location_str[0] ? g_location_str : "番禺",

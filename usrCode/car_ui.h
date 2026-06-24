@@ -3,9 +3,9 @@
  * @brief 主仪表盘界面 — 4 区域布局编排器
  *
  * 职责：
- *   - 在 lv_scr_act() 上创建无边框根容器 (800×480)
- *   - 调用各子模块创建函数组装左侧栏、中间仪表盘、右上状态、右下音乐栏
- *   - 暴露各区域容器指针供后续阶段在外部附着功能
+ *   - 在 lv_scr_act() 上设置背景色并调用各子模块创建函数
+ *   - 组装侧边栏、中间区域（仪表盘/空调/菜单三视图切换）、右侧状态+音乐栏
+ *   - 各子模块自行管理容器位置和可见性，通过各自头文件交互
  */
 
 #ifndef CAR_UI_H
@@ -16,10 +16,5 @@
 /** 创建完整仪表盘（在活跃屏幕上直接构建） */
 void car_ui_create_dashboard(void);
 
-/** 返回四个区域容器的句柄（供未来模块或 app_manager 使用） */
-lv_obj_t *car_ui_get_sidebar_cont(void);
-lv_obj_t *car_ui_get_center_cont(void);
-lv_obj_t *car_ui_get_status_cont(void);
-lv_obj_t *car_ui_get_music_bar_cont(void);
 
 #endif /* CAR_UI_H */

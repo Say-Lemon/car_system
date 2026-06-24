@@ -48,7 +48,7 @@
 #define VIDEO_DIR        "/mmcblk/video"
 
 /* ========== 网络配置（Phase 6） ========== */
-#define SERVER_IP        "192.168.137.100"
+#define SERVER_IP        "192.168.137.1"
 #define SERVER_PORT      8888
 
 /* ========== 设置文件路径（Phase 7） ========== */
