@@ -24,6 +24,9 @@
 #include "app_menu_ui.h"
 #include "car_ui_dashboard.h"
 #include "car_ui_ac_panel.h"
+#include "settings_ui.h"
+#include "music_controller.h"
+#include "vp_playback_controller.h"
 #include "lvgl/lvgl.h"
 
 /* 雪花图标使用 26px 独立字体（更大更清晰） */
@@ -171,10 +174,58 @@ void car_ui_sidebar_create(lv_obj_t *parent)
  *  按钮事件回调（当前 Phase 1：仅打印；后续阶段接入实际功能）
  * ================================================================ */
 
+static lv_obj_t *standby_overlay = NULL;
+
+static void on_standby_click(lv_event_t *e)
+{
+    (void)e;
+    car_ui_standby_deactivate();
+}
+
+void car_ui_standby_activate(void)
+{
+    if (standby_overlay) return;
+    music_stop_all();
+    playback_stop_all();
+
+    standby_overlay = lv_obj_create(lv_scr_act());
+    lv_obj_set_size(standby_overlay, DISP_HOR_RES, DISP_VER_RES);
+    lv_obj_set_pos(standby_overlay, 0, 0);
+    lv_obj_set_style_bg_color(standby_overlay, lv_color_hex(0x000000), 0);
+    lv_obj_set_style_bg_opa(standby_overlay, LV_OPA_90, 0);
+    lv_obj_set_style_border_width(standby_overlay, 0, 0);
+    lv_obj_clear_flag(standby_overlay, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_add_flag(standby_overlay, LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_add_event_cb(standby_overlay, on_standby_click, LV_EVENT_CLICKED, NULL);
+
+    lv_obj_t *hint = lv_label_create(standby_overlay);
+    lv_label_set_text(hint, "待机中\n点击屏幕唤醒");
+    lv_obj_center(hint);
+    lv_obj_set_style_text_color(hint, lv_color_hex(0x888888), 0);
+    lv_obj_set_style_text_align(hint, LV_TEXT_ALIGN_CENTER, 0);
+    APPLY_ZH_18(hint);
+    printf("[Power] 进入待机\n");
+}
+
+void car_ui_standby_deactivate(void)
+{
+    if (!standby_overlay) return;
+    lv_obj_del(standby_overlay);
+    standby_overlay = NULL;
+    g_last_input_time = time(NULL);
+    printf("[Power] 退出待机\n");
+}
+
+bool car_ui_is_standby(void)
+{
+    return standby_overlay != NULL;
+}
+
 static void sidebar_power_cb(lv_event_t *e)
 {
     (void)e;
-    printf("[Sidebar] 电源按钮被点击\n");
+    if (!standby_overlay) car_ui_standby_activate();
+    else                   car_ui_standby_deactivate();
 }
 
 static void sidebar_vol_up_cb(lv_event_t *e)

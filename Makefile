@@ -6,8 +6,8 @@
 CC = arm-linux-gcc
 LVGL_DIR_NAME ?= lvgl
 LVGL_DIR ?= ${shell pwd}
-CFLAGS ?= -O3 -g0 -I$(LVGL_DIR)/ -I$(LVGL_DIR)/usrCode -I$(LVGL_DIR)/usrCode/cJSON -Wall -std=gnu99
-LDFLAGS ?= -lm -lpthread
+CFLAGS ?= -O3 -g0 -I$(LVGL_DIR)/ -I$(LVGL_DIR)/usrCode -I$(LVGL_DIR)/usrCode/cJSON -Wall -std=gnu99 -ffunction-sections -fdata-sections
+LDFLAGS ?= -lm -lpthread -Wl,--gc-sections
 BIN = car_system
 
 # Collect all .c files under usrCode/
@@ -40,6 +40,7 @@ clean:
 
 send:
 	scp -O $(BIN) root@192.168.137.226:~/yjr/car_system
+	scp -O car_bg.bmp root@192.168.137.226:~/yjr/car_system/
 
 # Debug: show collected user source files
 show:

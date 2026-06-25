@@ -7,12 +7,11 @@
  * 转速：右下角，蓝色文字
  */
 #include "car_ui_dashboard.h"
+#include "car_ui_sidebar.h"
 #include "app_config.h"
 #include "font_zh_cn.h"
 #include "lvgl/lvgl.h"
-
-/* 嵌入的 car.png 图片数据 */
-extern const lv_img_dsc_t car_img;
+#include <time.h>
 
 lv_obj_t *g_dashboard_cont;
 lv_obj_t *g_label_speed;
@@ -36,9 +35,9 @@ void car_ui_dashboard_create(lv_obj_t *parent)
     lv_obj_set_style_clip_corner(g_dashboard_cont, true, 0);
     lv_obj_set_style_pad_all(g_dashboard_cont, 0, 0);
 
-    /* ---- 嵌入图片 ---- */
+    /* ---- 仪表盘背景图（BMP 文件，运行时加载） ---- */
     lv_obj_t *img = lv_img_create(g_dashboard_cont);
-    lv_img_set_src(img, &car_img);
+    lv_img_set_src(img, "S:car_bg.bmp");
     lv_obj_set_size(img, CENTER_W, ZONE_H);
     lv_obj_align(img, LV_ALIGN_CENTER, 0, 0);
 
@@ -113,8 +112,18 @@ void car_ui_dashboard_update_volume(int vol)
 static void dashboard_refresh_timer_cb(lv_timer_t *t)
 {
     (void)t;
+    static int last_speed = -1, last_fuel = -1, last_rpm = -1;
+
     /* 视频播放时 mplayer 直接写 framebuffer，LVGL 刷新会导致闪烁 */
     if (g_video_overlay_active) return;
+
+    /* 自动熄屏检测（非待机状态才触发） */
+    if (g_auto_screen_off_sec > 0 && g_last_input_time > 0 && !car_ui_is_standby()) {
+        if (time(NULL) - g_last_input_time >= g_auto_screen_off_sec) {
+            car_ui_standby_activate();
+            g_last_input_time = 0;
+        }
+    }
 
     int speed, fuel, rpm;
     pthread_mutex_lock(&g_can_mutex);
@@ -123,7 +132,8 @@ static void dashboard_refresh_timer_cb(lv_timer_t *t)
     rpm   = g_engine_rpm;
     pthread_mutex_unlock(&g_can_mutex);
 
-    dashboard_update_speed(speed);
-    dashboard_update_fuel(fuel);
-    dashboard_update_rpm(rpm);
+    /* 仅在值变化时更新（避免无意义 LVGL 重绘） */
+    if (speed != last_speed) { dashboard_update_speed(speed); last_speed = speed; }
+    if (fuel  != last_fuel)  { dashboard_update_fuel(fuel);   last_fuel  = fuel;  }
+    if (rpm   != last_rpm)   { dashboard_update_rpm(rpm);     last_rpm   = rpm;   }
 }

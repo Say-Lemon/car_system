@@ -131,8 +131,8 @@ def main():
         if server in readable:
             client, addr = server.accept()
             print(f"[Server] 客户端已连接: {addr[0]}:{addr[1]}")
-            # 延迟 2 秒，等待开发板 recv 就绪
-            time.sleep(2)
+            # 短暂延迟确保客户端 recv 就绪
+            time.sleep(0.3)
             if weather_data:
                 try:
                     client.sendall(weather_data)

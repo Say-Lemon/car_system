@@ -245,6 +245,15 @@ static void on_vol_changed(lv_event_t *e)
     car_ui_dashboard_update_volume(g_sys_volume);
 }
 
+void settings_backlight_off(void)
+{
+    int fd = open(BACKLIGHT_PATH "/brightness", O_WRONLY);
+    if (fd >= 0) {
+        write(fd, "0", 1);
+        close(fd);
+    }
+}
+
 void settings_backlight_apply(void)
 {
     static int max_bri = -1;

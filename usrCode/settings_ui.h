@@ -25,4 +25,7 @@ void settings_ui_hide(void);
 /** 应用当前亮度设置到硬件背光 */
 void settings_backlight_apply(void);
 
+/** 关闭背光（待机/熄屏用） */
+void settings_backlight_off(void);
+
 #endif

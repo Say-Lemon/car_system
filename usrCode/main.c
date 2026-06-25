@@ -22,6 +22,7 @@
 #include "lv_drivers/indev/evdev.h"
 #include "lvgl/src/libs/fsdrv/lv_fsdrv.h"
 #include "car_ui.h"
+#include "car_ui_sidebar.h"
 #include "music_catalog.h"
 #include "can_simulator.h"
 #include "network_client.h"
@@ -44,6 +45,7 @@ pthread_mutex_t g_net_mutex  = PTHREAD_MUTEX_INITIALIZER;
 /* 运行标志 */
 volatile bool g_app_running = false;
 bool g_video_overlay_active  = false;
+time_t g_last_input_time     = 0;
 
 /* CAN 数据 */
 int g_speed_kmh    = 0;
@@ -69,6 +71,14 @@ bool g_music_interrupted_by_video = false;
 int g_ac_temperature = 24;   /* 16-32 °C */
 int g_ac_fan_speed   = 3;    /* 1-7 档 */
 int g_ac_mode         = 0;   /* 0=吹面 1=吹脚 2=吹面+吹脚 3=除霜 */
+
+/* 全局触摸回调：记录空闲时间 + 熄屏唤醒 */
+static void on_global_input(lv_event_t *e)
+{
+    (void)e;
+    if (car_ui_is_standby()) car_ui_standby_deactivate();
+    g_last_input_time = time(NULL);
+}
 
 /* ========== 程序入口 ========== */
 int main(void)
@@ -116,6 +126,9 @@ int main(void)
     settings_config_load();
     settings_backlight_apply();  /* 应用保存的亮度到硬件 */
 
+    /* ---- 8c. 注册全局触摸事件（自动熄屏空闲检测） ---- */
+    lv_obj_add_event_cb(lv_scr_act(), on_global_input, LV_EVENT_PRESSED, NULL);
+
     /* ---- 9. 创建车机主界面 ---- */
     car_ui_create_dashboard();
 
@@ -130,8 +143,8 @@ int main(void)
     /* ---- 12. 主事件循环（约 200Hz） ---- */
     while (1) {
         lv_timer_handler();   /* 处理 LVGL 定时器/动画/事件 */
-        lv_tick_inc(5);       /* 手动推进时间基准 */
-        usleep(5000);         /* ~5ms 间隔 */
+        lv_tick_inc(17);       /* 手动推进时间基准 */
+        usleep(17000);         /* ~60Hz 间隔 */
     }
 
     return 0;

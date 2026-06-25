@@ -197,6 +197,9 @@ static void music_bar_seek_cb(lv_event_t *e)
 static void music_bar_refresh_cb(lv_timer_t *t)
 {
     (void)t;
+    /* 视频播放时跳过 LVGL 刷新，避免 fbdev_flush 冲突闪烁 */
+    if (g_video_overlay_active) return;
+
     /* reader 线程检测到 EOF → 主线程安全切歌 */
     if (g_music_eof) {
         g_music_eof = false;

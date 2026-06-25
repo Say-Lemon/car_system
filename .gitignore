@@ -29,6 +29,10 @@ Thumbs.db
 # Large media test files
 music/*.mp3
 
+# Dashboard background image (generated from car_img_data.c.bak)
+car_bg.bmp
+car_img_data.c.bak
+
 # Document extraction artifacts
 document.xml
 项目3.docx

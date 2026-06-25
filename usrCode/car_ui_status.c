@@ -28,18 +28,30 @@ static const char *weekday_cn[] = {
 static void status_clock_refresh_cb(lv_timer_t *t)
 {
     (void)t;
+    static int last_min = -1, last_wday = -1, last_mday = -1;
+
     /* 视频播放器覆盖时跳过：避免 fbdev_flush 覆盖 mplayer 画面导致闪烁 */
     if (g_video_overlay_active) return;
     time_t   now = time(NULL);
     struct tm *tm = localtime(&now);
 
-    lv_label_set_text_fmt(g_label_time, "%02d:%02d",
-                          tm->tm_hour, tm->tm_min);
-    lv_label_set_text(g_label_weekday, weekday_cn[tm->tm_wday]);
-    lv_label_set_text_fmt(g_label_date, "%d/%d/%d",
-                          tm->tm_year + 1900,
-                          tm->tm_mon + 1,
-                          tm->tm_mday);
+    /* 每分钟刷新时间，日期和星期仅变化时刷新 */
+    if (tm->tm_min != last_min) {
+        lv_label_set_text_fmt(g_label_time, "%02d:%02d",
+                              tm->tm_hour, tm->tm_min);
+        last_min = tm->tm_min;
+    }
+    if (tm->tm_wday != last_wday) {
+        lv_label_set_text(g_label_weekday, weekday_cn[tm->tm_wday]);
+        last_wday = tm->tm_wday;
+    }
+    if (tm->tm_mday != last_mday) {
+        lv_label_set_text_fmt(g_label_date, "%d/%d/%d",
+                              tm->tm_year + 1900,
+                              tm->tm_mon + 1,
+                              tm->tm_mday);
+        last_mday = tm->tm_mday;
+    }
 }
 
 void car_ui_status_create(lv_obj_t *parent)
@@ -107,6 +119,22 @@ void car_ui_status_create(lv_obj_t *parent)
     /* ---- 1 秒时钟 ---- */
     lv_timer_create(status_clock_refresh_cb, 1000, NULL);
     status_clock_refresh_cb(NULL);
+}
+
+/* 强制刷新时钟（时间同步后立即调用，无需等待 1 秒定时器） */
+void car_ui_status_clock_force_refresh(void *user_data)
+{
+    (void)user_data;
+    if (g_video_overlay_active) return;
+    time_t   now = time(NULL);
+    struct tm *tm = localtime(&now);
+    lv_label_set_text_fmt(g_label_time, "%02d:%02d",
+                          tm->tm_hour, tm->tm_min);
+    lv_label_set_text(g_label_weekday, weekday_cn[tm->tm_wday]);
+    lv_label_set_text_fmt(g_label_date, "%d/%d/%d",
+                          tm->tm_year + 1900,
+                          tm->tm_mon + 1,
+                          tm->tm_mday);
 }
 
 void ui_refresh_status_labels(void *user_data)

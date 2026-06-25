@@ -56,7 +56,7 @@ void *playback_status_reader_thread(void *arg)
             if (p) {
                 p++;
                 sscanf(p, "%f", &time_pos);
-                printf("当前播放时间 %.2f\n", time_pos);
+                /* printf("[Video] 时间 %.2f\n", time_pos); */
 
                 char tmp[100] = {0};
                 int tmp_time = (int)time_pos;
@@ -77,7 +77,7 @@ void *playback_status_reader_thread(void *arg)
             if (p) {
                 int percent = 0;
                 sscanf(++p, "%d", &percent);
-                printf("播放百分比 %d\n", percent);
+                /* printf("[Video] 百分比 %d\n", percent); */
 
                 if (percent != percent_pos) {
                     percent_pos = percent;
@@ -99,7 +99,7 @@ void *playback_status_reader_thread(void *arg)
             if (p) {
                 p++;
                 sscanf(p, "%f", &time_length);
-                printf("总时长 %.2f\n", time_length);
+                /* printf("[Video] 总时长 %.2f\n", time_length); */
 
                 char time_buf[100] = {0};
                 int length = (int)time_length;

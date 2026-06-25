@@ -65,6 +65,8 @@ static void parse_and_update(const char *json_str)
                 /* 设置时区为中国标准时间 (UTC+8) */
                 setenv("TZ", "CST-8", 1);
                 tzset();
+                /* 立即刷新时钟显示（无需等 1 秒定时器） */
+                lv_async_call(car_ui_status_clock_force_refresh, NULL);
                 printf("[NET] 系统时间已同步: %s", ctime(&tv.tv_sec));
             } else {
                 perror("[NET] settimeofday");

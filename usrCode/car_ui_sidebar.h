@@ -24,4 +24,9 @@ extern lv_obj_t *g_btn_vol_down;
 extern lv_obj_t *g_btn_ac;
 extern lv_obj_t *g_btn_app_menu;
 
+/** 待机控制：进入/退出/查询状态 */
+void car_ui_standby_activate(void);
+void car_ui_standby_deactivate(void);
+bool car_ui_is_standby(void);
+
 #endif /* CAR_UI_SIDEBAR_H */

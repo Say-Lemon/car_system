@@ -382,7 +382,7 @@ static void ui_create_player_screen(void)
     ui_create_transport_controls();
     ui_create_playlist();
     ui_create_playback_sliders();
-    lv_timer_create(video_auto_next_cb, 500, NULL);
+    lv_timer_create(video_auto_next_cb, 1000, NULL);
 }
 
 /**

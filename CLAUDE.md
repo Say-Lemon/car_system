@@ -65,6 +65,11 @@ GEC6818 ARM Cortex-A53 开发板，800×480 LVGL v9.0-dev，arm-linux-gcc 交叉
 - 字体 cmap 使用 RCP（Relative Code Point = Unicode - range_start），不是绝对码点
 - 16px 字体缺失：风、档、吹、脚、除、霜、面 → 这些只在 18px 字体中
 
+### 3.5 仪表盘图片格式
+**C 数组实际格式**: ARGB（注释误标为 BGRA），LVGL BMP 解码器按 RGB 而非标准 BGR 映射
+**BMP 生成正确命令**: 从 C 数组 `pixels[idx+1](R), +2(G), +3(B)` → BMP RGB 顺序
+**备用生成脚本**: 见 `scripts/convert_car_img.py`
+
 ### 4. 视频与 LVGL 刷新冲突
 **现象**: 播放视频时仪表盘/状态栏闪烁
 **根因**: mplayer 直接写 /dev/fb0 与 LVGL 的 fbdev_flush 冲突

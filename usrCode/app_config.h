@@ -66,6 +66,7 @@ extern volatile bool g_app_running;
 
 /** 视频播放器覆盖标志：为 true 时仪表盘刷新暂停，避免 fbdev_flush 覆盖 mplayer 画面 */
 extern bool g_video_overlay_active;
+extern time_t g_last_input_time;    /* 最后一次触摸时间 */
 
 /* ================================================
  *  音乐播放控制全局状态（Phase 2）
