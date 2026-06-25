@@ -40,7 +40,7 @@ clean:
 
 send:
 	scp -O $(BIN) root@192.168.137.226:~/yjr/car_system
-	scp -O car_bg.bmp root@192.168.137.226:~/yjr/car_system/
+	# scp -O car_bg.bmp root@192.168.137.226:~/yjr/car_system/
 
 # Debug: show collected user source files
 show:

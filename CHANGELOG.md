@@ -391,6 +391,60 @@
 
 ---
 
+## 2026-06-25 — Phase 8: 性能优化 + 待机功能
+
+### 十大性能优化
+1. **删除未使用字体 `font_zh_cn_16.c`** — 349KB 死代码
+2. **禁用 LVGL 示例/demo/monkey** — `LV_BUILD_EXAMPLES=0` 等
+3. **主循环降频 200Hz→60Hz** — CPU 空闲唤醒 -70%
+4. **编译优化** — `-ffunction-sections -Wl,--gc-sections` 剔除死代码
+5. **仪表盘值缓存** — 速度/油量/转速仅在变化时刷新
+6. **音乐栏 video_overlay 保护** — 视频播放时不刷新迷你栏
+7. **视频 auto-next 降频 500→1000ms**
+8. **时钟刷新优化** — 仅分钟变化时更新，日期/星期仅午夜更新
+9. **禁用未用 Montserrat 字号** — 20/28/30→0
+10. **关闭高频 printf** — vp_playback_monitor 进度打印注释掉
+
+### 仪表盘图片压缩
+- `car_img_data.c` (5MB C 数组) → `car_bg.bmp` (593KB 24-bit BMP 文件加载)
+- 图片格式教训：C 数组实为 ARGB，LVGL BMP 解码器按 RGB 映射（非标准 BGR）
+- **二进制**: 3.0MB → **1.2MB (-60%)**
+
+### 待机功能
+- 电源键：进入/退出待机 — 停止播放 + 全屏暗色遮罩 + "待机中/点击屏幕唤醒"
+- 自动熄屏：空闲超时后自动进入待机，触摸唤醒
+- 背光控制预留（此板硬件不通，代码就绪）
+
+### 代码清理
+- `car_ui.c/h` 删除未使用的静态变量和 getter 函数
+- `settings_ui.c` 删除重复的 close 按钮
+
+### 新增文件
+- `usrCode/settings_ui.c/h` — 系统设置面板
+- `usrCode/settings_config.c/h` — config.json 读写
+- `car_bg.bmp` — 仪表盘背景图
+
+### 修改文件
+- `usrCode/main.c` — 60Hz 循环 + 触摸事件 + 配置加载 + 时间同步
+- `usrCode/car_ui.c/h` — 清理死代码
+- `usrCode/car_ui_dashboard.c` — 值缓存 + 自动熄屏检测
+- `usrCode/car_ui_music_bar.c` — video_overlay 保护
+- `usrCode/car_ui_sidebar.c` — 电源键待机逻辑
+- `usrCode/car_ui_status.c` — 时钟优化 + 强制刷新
+- `usrCode/car_ui_ac_panel.c` — 互斥调用
+- `usrCode/app_menu_ui.c` — 设置卡片 + 互斥调用
+- `usrCode/vp_player_ui.c` — 48px 关闭键 + 定时器降频
+- `usrCode/vp_playback_monitor.c` — 关闭高频 printf
+- `usrCode/network_client.c` — 时间同步 + 时钟强制刷新
+- `usrCode/app_config.h` — g_last_input_time + g_bluetooth_name
+- `lv_conf.h` — 示例/demo/monkey=0 + Montserrat 优化
+- `Makefile` — -ffunction-sections -Wl,--gc-sections
+- `scripts/weather_server.py` — 真实天气 API + 延迟优化
+- `usrCode/font_zh_cn_18.c` — 多次补字 (697→701 字符)
+- `usrCode/font_zh_cn_16.c` — 删除
+
+---
+
 ## 文件清单
 
 ```
