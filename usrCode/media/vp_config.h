@@ -21,4 +21,4 @@
 #define FIFO_PATH   "/tmp/video_control"
 #define VIDEO_DIR   "/mmcblk/video"
 
-#endif
+#endif /* VP_CONFIG_H */

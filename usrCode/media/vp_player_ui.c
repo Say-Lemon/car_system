@@ -1,5 +1,5 @@
 /**
- * @file player_ui.c
+ * @file vp_player_ui.c
  * @brief 播放器 LVGL 界面：主菜单、播放控制条、列表、FIFO 命令下发
  *
  * 界面层次：
@@ -236,7 +236,7 @@ static void ui_create_playback_sliders(void)
     lv_obj_align(volume_slider, LV_ALIGN_BOTTOM_RIGHT, 0, 0);
     lv_obj_set_width(volume_slider, 100);
     lv_obj_add_event_cb(volume_slider, ui_playback_slider_cb, LV_EVENT_VALUE_CHANGED, "volume");
-    lv_slider_set_value(volume_slider, 100, LV_ANIM_OFF);
+    lv_slider_set_value(volume_slider, g_sys_volume, LV_ANIM_OFF);
     style_slider(volume_slider);
 
     volume_label = lv_label_create(cont);
@@ -252,7 +252,7 @@ static void ui_create_playback_sliders(void)
     lv_obj_align(bright_slider, LV_ALIGN_BOTTOM_LEFT, 0, 0);
     lv_obj_add_event_cb(bright_slider, ui_playback_slider_cb, LV_EVENT_VALUE_CHANGED, "brightness");
     lv_obj_set_width(bright_slider, 100);
-    lv_slider_set_value(bright_slider, 20, LV_ANIM_OFF);
+    lv_slider_set_value(bright_slider, g_sys_brightness, LV_ANIM_OFF);
     style_slider(bright_slider);
 
     bright_label = lv_label_create(cont);

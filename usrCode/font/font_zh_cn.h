@@ -26,4 +26,4 @@ LV_FONT_DECLARE(zh_cn_font);
 LV_FONT_DECLARE(font_zh_cn_18);
 #define APPLY_ZH_18(obj)  lv_obj_set_style_text_font((obj), &font_zh_cn_18, 0)
 
-#endif
+#endif /* FONT_ZH_CN_H */

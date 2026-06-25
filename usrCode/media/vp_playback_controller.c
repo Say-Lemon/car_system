@@ -1,5 +1,5 @@
 /**
- * @file playback_controller.c
+ * @file vp_playback_controller.c
  * @brief 播放引擎：MPlayer 子进程管理与播放控制逻辑
  *
  * 数据通路：
@@ -46,7 +46,7 @@ void playback_stop_all(void)
 }
 
 /**
- * @brief 播放线程：popen 启动 mplayer，并查询总时长与当前位置
+ * @brief 播放线程：fork+pipe 启动 mplayer，并查询总时长与当前位置
  *
  * -slave：文本命令/应答模式
  * -input file=FIFO_PATH：从命名管道读命令
@@ -90,7 +90,7 @@ void *playback_launch_thread(void *arg)
  * @brief 播放当前 video_index 指向的视频（切歌入口）
  *
  * 1. 若已在播则 playback_stop_all 并短暂等待
- * 2. 新建 detached 线程执行 popen
+ * 2. 新建 detached 线程执行 fork+pipe
  * 3. 首次调用时 sleep(1) 后创建读/写线程（等待 mplayer 与 FIFO 就绪）
  * 4. pthread_cond_signal 唤醒可能阻塞在 cond 上的读线程
  * 5. 按 UI 滑条同步音量、亮度

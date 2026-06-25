@@ -1,5 +1,5 @@
 /**
- * @file media_catalog.c
+ * @file vp_media_catalog.c
  * @brief 本地视频目录扫描实现
  *
  * 知识点：目录流 opendir / readdir / closedir，路径拼接，字符串过滤。

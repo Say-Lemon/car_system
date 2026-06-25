@@ -25,7 +25,6 @@
 #include "car_ui_dashboard.h"
 #include "car_ui_ac_panel.h"
 #include "settings_ui.h"
-#include "music_controller.h"
 #include "vp_playback_controller.h"
 #include "lvgl/lvgl.h"
 
@@ -171,7 +170,7 @@ void car_ui_sidebar_create(lv_obj_t *parent)
 }
 
 /* ================================================================
- *  按钮事件回调（当前 Phase 1：仅打印；后续阶段接入实际功能）
+ *  按钮事件回调
  * ================================================================ */
 
 static lv_obj_t *standby_overlay = NULL;

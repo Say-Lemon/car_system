@@ -1,8 +1,8 @@
 /**
- * @file playback_monitor.h
+ * @file vp_playback_monitor.h
  * @brief 解析 MPlayer slave 应答并更新播放状态
  *
- * 读线程从 fp_mplayer（popen 管道）按行读取，识别例如：
+ * 读线程从 fp_mplayer（fork+pipe 管道）按行读取，识别例如：
  *   ANS_TIME_POSITION=12.3
  *   ANS_PERCENT_POSITION=45
  *   ANS_LENGTH=120.0
@@ -27,7 +27,6 @@ extern float time_pos;
  * 更新 UI 时必须 pthread_mutex_lock(&mutex_lv)。
  */
 void *playback_status_reader_thread(void *arg);
-void video_reset_volume_sync(void);
 extern volatile bool g_video_eof;
 
 #endif /* PLAYBACK_MONITOR_H */

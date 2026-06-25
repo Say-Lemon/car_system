@@ -28,4 +28,4 @@ void settings_backlight_apply(void);
 /** 关闭背光（待机/熄屏用） */
 void settings_backlight_off(void);
 
-#endif
+#endif /* SETTINGS_UI_H */

@@ -1,5 +1,5 @@
 /**
- * @file player_ui.h
+ * @file vp_player_ui.h
  * @brief 播放器 LVGL 界面：主菜单与视频播放控制页
  *
  * 对外暴露的 lv_obj_t 指针供 playback_controller / playback_monitor 读取滑条、

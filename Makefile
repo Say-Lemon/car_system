@@ -6,7 +6,7 @@
 CC = arm-linux-gcc
 LVGL_DIR_NAME ?= lvgl
 LVGL_DIR ?= ${shell pwd}
-CFLAGS ?= -O3 -g0 -I$(LVGL_DIR)/ -I$(LVGL_DIR)/usrCode -I$(LVGL_DIR)/usrCode/cJSON -Wall -std=gnu99 -ffunction-sections -fdata-sections
+CFLAGS ?= -O3 -g0 -I$(LVGL_DIR)/ -I$(LVGL_DIR)/usrCode -I$(LVGL_DIR)/usrCode/cJSON -I$(LVGL_DIR)/usrCode/core -I$(LVGL_DIR)/usrCode/ui -I$(LVGL_DIR)/usrCode/media -I$(LVGL_DIR)/usrCode/network -I$(LVGL_DIR)/usrCode/system -I$(LVGL_DIR)/usrCode/font -Wall -std=gnu99 -ffunction-sections -fdata-sections
 LDFLAGS ?= -lm -lpthread -Wl,--gc-sections
 BIN = car_system
 

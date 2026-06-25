@@ -1,5 +1,5 @@
 /**
- * @file playback_monitor.c
+ * @file vp_playback_monitor.c
  * @brief 解析 MPlayer slave 模式标准输出，刷新进度条与时间标签
  *
  * 与 playback_io_query_writer_thread 配合：写线程发 get_*，本线程读 ANS_*。

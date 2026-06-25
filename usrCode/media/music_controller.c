@@ -35,7 +35,6 @@ pthread_t       g_tid_music_read;
 pthread_t       g_tid_music_write;
 
 static bool threads_created = false;
-static int  auto_next_guard = 0;
 volatile bool g_music_eof = false;
 pid_t music_mplayer_pid = -1;
 
@@ -217,7 +216,7 @@ void *music_reader_thread(void *arg)
 
     char line[256];
     /* 等待 writers 就绪 */
-    while (threads_created) { usleep(5000); break; }
+    if (!threads_created) usleep(5000);
 
     while (1) {
         while (g_fp_music_mplayer == NULL) usleep(200000);
@@ -260,10 +259,8 @@ void *music_reader_thread(void *arg)
                     g_music_percent_pos = pct;
                 }
                 /* 接近结尾 → 设标志，主线程定时器处理切歌 */
-                if (g_music_percent_pos >= 98 && auto_next_guard == 0) {
-                    auto_next_guard = 1;
+                if (g_music_percent_pos >= 98) {
                     g_music_eof = true;
-                    auto_next_guard = 0;
                 }
             }
         }

@@ -1,5 +1,5 @@
 /**
- * @file playback_io_sync.c
+ * @file vp_playback_io_sync.c
  * @brief 播放 I/O 轮询写线程与读/写协调（信号 + 条件变量）
  *
  * 设计原因：

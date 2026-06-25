@@ -14,4 +14,4 @@ extern int  g_music_count;
 
 void music_catalog_scan(void);
 
-#endif
+#endif /* MUSIC_CATALOG_H */

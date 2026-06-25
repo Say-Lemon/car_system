@@ -11,4 +11,4 @@
 lv_obj_t *music_player_ui_create(void);
 void music_player_ui_close(void);
 
-#endif
+#endif /* MUSIC_PLAYER_UI_H */

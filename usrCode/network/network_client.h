@@ -13,4 +13,4 @@
  *  连接失败时每 3 秒重试，不影响其他模块运行。 */
 void network_client_start(void);
 
-#endif
+#endif /* NETWORK_CLIENT_H */

@@ -1,10 +1,10 @@
 /**
- * @file playback_io_sync.h
+ * @file vp_playback_io_sync.h
  * @brief 播放 I/O 后台线程、互斥锁与条件变量声明
  *
  * 与 playback_controller / playback_monitor / player_ui 协作：
  *   - playback_io_query_writer_thread：周期性向 FIFO 发送 get_time_pos / get_percent_pos
- *   - playback_status_reader_thread：从 popen 管道读 ANS_* 应答
+ *   - playback_status_reader_thread：从 fork+pipe 管道读 ANS_* 应答
  *   - playback_io_pause_*：在 seek、拖进度条时暂停读/写，避免状态竞争
  *
  * 读/写线程在 playback_play_current() 首次播放时创建。

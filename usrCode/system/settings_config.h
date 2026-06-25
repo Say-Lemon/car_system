@@ -15,4 +15,4 @@ void settings_config_load(void);
 /** 将当前全局变量保存到 CONFIG_FILE */
 void settings_config_save(void);
 
-#endif
+#endif /* SETTINGS_CONFIG_H */

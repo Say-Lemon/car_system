@@ -20,4 +20,4 @@ void app_menu_ui_toggle(void);
 /** 隐藏菜单（供 AC panel toggle 互斥调用） */
 void app_menu_ui_hide(void);
 
-#endif
+#endif /* APP_MENU_UI_H */

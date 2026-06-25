@@ -1,5 +1,5 @@
 /**
- * @file media_catalog.h
+ * @file vp_media_catalog.h
  * @brief 本地视频目录扫描模块接口
  *
  * 启动时在 ./video 目录下查找 .avi / .mp4 / .mkv 文件，

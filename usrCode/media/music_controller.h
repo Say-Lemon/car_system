@@ -19,7 +19,7 @@
 #include <pthread.h>
 
 /* ---- 全局状态 ---- */
-extern FILE *g_fp_music_mplayer;    /* popen 返回的 stdout 管道 */
+extern FILE *g_fp_music_mplayer;    /* fork+pipe stdout 管道 */
 extern int   g_fd_music_fifo;       /* FIFO 文件描述符 */
 extern int   g_music_index;         /* 当前播放索引 */
 extern int   g_music_percent_pos;   /* 0-100 */
@@ -52,4 +52,4 @@ extern pthread_cond_t  g_music_rd_cond;
 extern pthread_t       g_tid_music_read;
 extern pthread_t       g_tid_music_write;
 
-#endif
+#endif /* MUSIC_CONTROLLER_H */

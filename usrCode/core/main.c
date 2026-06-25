@@ -140,7 +140,7 @@ int main(void)
 
     printf("[Main] 智能车机系统启动完成\n");
 
-    /* ---- 12. 主事件循环（约 200Hz） ---- */
+    /* ---- 12. 主事件循环（约 60Hz） ---- */
     while (1) {
         lv_timer_handler();   /* 处理 LVGL 定时器/动画/事件 */
         lv_tick_inc(17);       /* 手动推进时间基准 */
