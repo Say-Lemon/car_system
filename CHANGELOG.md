@@ -351,17 +351,25 @@
 - cJSON 解析在锁外完成，仅 strncpy/int 赋值在 g_net_mutex 临界区内
 
 ### 天气服务器
-- 创建 `scripts/weather_server.py` — Python TCP 服务器
-- 8 种天气场景循环轮换（晴/多云/阴/小雨/阵雨/雷阵雨 × 广州/番禺/深圳）
-- WSL2 网络隔离解决：Windows 端口转发 `netsh interface portproxy` + 防火墙放行
+- 创建 `scripts/weather_server.py` — 初版模拟 8 种天气场景循环
+- 升级为真实天气：接入 wttr.in 免费 API，无需注册
+- 英→中翻译表覆盖 20+ 天气描述（晴/多云/阴/小雨/阵雨/雷阵雨/暴雨/雾/雪等）
+- **部署方式**：必须在 Windows 终端运行（`python scripts/weather_server.py`），开发板连 `192.168.137.1:8888`
+- WSL2 网络隔离解决方案：端口转发（可用但不稳定）→ 最终改为 Windows 直连
+
+### 时间同步
+- JSON 新增 `"time"` 字段（Unix 时间戳），服务器每次发送
+- 开发板首次收到数据时调用 `settimeofday()` 设置系统时钟
+- `setenv("TZ", "CST-8") + tzset()` 配置中国标准时间（UTC+8）
+- 解决开发板无 RTC 电池导致每次启动日期为 2015/1/1 的问题
 
 ### UI 刷新保护
 - `ui_refresh_status_labels()` 首次被实际调用（此前已实现但从未使用）
 - 新增 `g_video_overlay_active` 检查：视频播放时跳过天气刷新，避免 fbdev_flush 冲突闪烁
 
 ### 字体更新
-- 天气数据引入新汉字（广州阴阵雷圳）→ `font_zh_cn_18.c` 重新生成
-- **教训**：必须用原始字体 `NotoSansSC-VF.ttf` + 原始符号集 + 追加新字，换用 simhei 会丢失 ♫♪❄ 等图标
+- 天气数据引入新汉字（广州阴阵雷圳雾暴冻雹沙尘霾）→ `font_zh_cn_18.c` 两次重新生成，689→699 字符
+- **教训**：必须用原始字体 `NotoSansSC-VF.ttf` + git 历史提取原始符号集 + 追加新字，换用 simhei 会丢失 ♫♪❄ 等图标
 
 ### 代码清理
 - `car_ui.c/h` 删除 4 个未使用的静态变量和 getter 函数（死代码）
@@ -374,10 +382,12 @@
 
 ### 修改文件
 - `usrCode/main.c` — +2 行集成网络线程
+- `usrCode/network_client.c` — 时间同步（settimeofday + TZ）
 - `usrCode/car_ui_status.c` — g_video_overlay_active 保护
 - `usrCode/car_ui.c/h` — 清理死代码
-- `usrCode/font_zh_cn_18.c` — 追加 6 个汉字
+- `usrCode/font_zh_cn_18.c` — 三次重新生成，追加 13 个汉字
 - `usrCode/font_symbols.txt` — 同步更新
+- `scripts/weather_server.py` — 模拟→真实天气 API + 时间戳
 
 ---
 

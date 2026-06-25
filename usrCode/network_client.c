@@ -19,6 +19,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <errno.h>
+#include <sys/time.h>
 
 /* ========== 常量 ========== */
 #define NET_RECONNECT_SEC  3
@@ -29,6 +30,8 @@
 /** 解析一行 JSON 并更新全局变量（锁内仅赋值，锁外解析） */
 static void parse_and_update(const char *json_str)
 {
+    static bool time_synced = false;
+
     cJSON *root = cJSON_Parse(json_str);
     if (root == NULL) {
         const char *err = cJSON_GetErrorPtr();
@@ -49,6 +52,25 @@ static void parse_and_update(const char *json_str)
 
     cJSON *l = cJSON_GetObjectItem(root, "location");
     if (cJSON_IsString(l)) strncpy(location_tmp, l->valuestring, sizeof(location_tmp) - 1);
+
+    /* 首次收到时间戳时同步系统时钟（开发板无 RTC 电池） */
+    if (!time_synced) {
+        cJSON *tm = cJSON_GetObjectItem(root, "time");
+        if (cJSON_IsNumber(tm)) {
+            struct timeval tv;
+            tv.tv_sec  = (time_t)tm->valuedouble;
+            tv.tv_usec = 0;
+            if (settimeofday(&tv, NULL) == 0) {
+                time_synced = true;
+                /* 设置时区为中国标准时间 (UTC+8) */
+                setenv("TZ", "CST-8", 1);
+                tzset();
+                printf("[NET] 系统时间已同步: %s", ctime(&tv.tv_sec));
+            } else {
+                perror("[NET] settimeofday");
+            }
+        }
+    }
 
     cJSON_Delete(root);
 

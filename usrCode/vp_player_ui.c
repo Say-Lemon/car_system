@@ -348,7 +348,7 @@ static void ui_create_close_button(void)
 {
     lv_obj_t *btn_close = lv_btn_create(cont);
     lv_obj_align(btn_close, LV_ALIGN_TOP_RIGHT, 0, 30);
-    lv_obj_set_size(btn_close, 36, 36);
+    lv_obj_set_size(btn_close, 48, 48);
     lv_obj_set_style_bg_color(btn_close, lv_color_hex(0xFF6D00), 0);
     lv_obj_set_style_radius(btn_close, 6, 0);
     lv_obj_set_style_shadow_width(btn_close, 0, 0);

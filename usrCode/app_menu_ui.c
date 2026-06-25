@@ -8,6 +8,7 @@
 #include "app_menu_ui.h"
 #include "car_ui_dashboard.h"
 #include "car_ui_ac_panel.h"
+#include "settings_ui.h"
 #include "music_player_ui.h"
 #include "vp_player_ui.h"
 #include "app_config.h"
@@ -58,6 +59,13 @@ static void on_video(lv_event_t *e)
     video_player_launch();      /* 再打开视频播放器 */
 }
 
+static void on_settings(lv_event_t *e)
+{
+    (void)e;
+    app_menu_ui_hide();         /* 隐藏菜单 */
+    settings_ui_open();         /* 打开设置面板 */
+}
+
 /* ================================================================
  *  创建菜单面板
  * ================================================================ */
@@ -94,6 +102,7 @@ void app_menu_ui_create(lv_obj_t *parent)
 
     create_app_card(grid, "乐",  "音乐播放器", on_music);
     create_app_card(grid, "视",  "视频播放器", on_video);
+    create_app_card(grid, "设",  "系统设置",   on_settings);
 
     /* ---- 初始隐藏 ---- */
     lv_obj_add_flag(menu_cont, LV_OBJ_FLAG_HIDDEN);
@@ -112,12 +121,14 @@ void app_menu_ui_toggle(void)
     if (menu_visible) {
         /* 当前显示菜单 → 隐藏菜单，显示仪表盘 */
         lv_obj_add_flag(menu_cont, LV_OBJ_FLAG_HIDDEN);
+        settings_ui_hide();
         lv_obj_clear_flag(g_dashboard_cont, LV_OBJ_FLAG_HIDDEN);
         printf("[Menu] 切换到仪表盘\n");
     } else {
-        /* 显示菜单，隐藏仪表盘和空调面板 */
+        /* 显示菜单，隐藏仪表盘、空调面板和设置 */
         lv_obj_add_flag(g_dashboard_cont, LV_OBJ_FLAG_HIDDEN);
         car_ui_ac_panel_hide();
+        settings_ui_hide();
         lv_obj_clear_flag(menu_cont, LV_OBJ_FLAG_HIDDEN);
         printf("[Menu] 切换到应用菜单\n");
     }

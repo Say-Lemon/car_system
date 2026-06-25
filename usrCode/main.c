@@ -25,6 +25,8 @@
 #include "music_catalog.h"
 #include "can_simulator.h"
 #include "network_client.h"
+#include "settings_config.h"
+#include "settings_ui.h"
 #include "app_config.h"
 #include <unistd.h>
 #include <pthread.h>
@@ -58,6 +60,7 @@ char g_nav_hint[32]     = "";
 int g_sys_volume          = 10;
 int g_sys_brightness      = 70;
 int g_auto_screen_off_sec = 30;
+char g_bluetooth_name[32] = "GEC6818-CAR";
 
 /* 视频/音乐互斥标志：视频打开时若音乐正在播放则暂停，视频关闭后自动续播 */
 bool g_music_interrupted_by_video = false;
@@ -109,6 +112,10 @@ int main(void)
     /* ---- 8. 扫描媒体目录 ---- */
     music_catalog_scan();
 
+    /* ---- 8b. 加载用户配置（必须在 UI 创建前，确保初始值正确） ---- */
+    settings_config_load();
+    settings_backlight_apply();  /* 应用保存的亮度到硬件 */
+
     /* ---- 9. 创建车机主界面 ---- */
     car_ui_create_dashboard();
 
@@ -120,7 +127,7 @@ int main(void)
 
     printf("[Main] 智能车机系统启动完成\n");
 
-    /* ---- 11. 主事件循环（约 200Hz） ---- */
+    /* ---- 12. 主事件循环（约 200Hz） ---- */
     while (1) {
         lv_timer_handler();   /* 处理 LVGL 定时器/动画/事件 */
         lv_tick_inc(5);       /* 手动推进时间基准 */

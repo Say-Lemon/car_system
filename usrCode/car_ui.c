@@ -9,6 +9,7 @@
  *     ├── car_ui_dashboard_create(scr)      → 中间仪表盘 440×460
  *     ├── car_ui_ac_panel_create(scr)       → 空调面板（初始隐藏）
  *     ├── app_menu_ui_create(scr)           → 应用菜单（初始隐藏）
+ *     ├── settings_ui_create(scr)           → 系统设置（初始隐藏）
  *     ├── car_ui_status_create(scr)         → 右上状态 250×140
  *     └── car_ui_music_bar_create(scr)      → 右下音乐栏 250×310
  *
@@ -22,6 +23,7 @@
 #include "car_ui_music_bar.h"
 #include "car_ui_ac_panel.h"
 #include "app_menu_ui.h"
+#include "settings_ui.h"
 #include "app_config.h"
 #include "lvgl/lvgl.h"
 
@@ -39,6 +41,7 @@ void car_ui_create_dashboard(void)
     car_ui_dashboard_create(scr);
     car_ui_ac_panel_create(scr);   /* 空调面板——初始隐藏 */
     app_menu_ui_create(scr);       /* 应用菜单——初始隐藏 */
+    settings_ui_create(scr);       /* 系统设置——初始隐藏 */
     car_ui_status_create(scr);
     car_ui_music_bar_create(scr);
 }

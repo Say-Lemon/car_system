@@ -112,5 +112,6 @@ extern char g_nav_hint[32];     /* 导航提示文字 */
 extern int g_sys_volume;           /* 默认音量 0-100 */
 extern int g_sys_brightness;       /* 屏幕亮度 0-100 */
 extern int g_auto_screen_off_sec;  /* 自动熄屏倒计时秒数，0 = 永不息屏 */
+extern char g_bluetooth_name[32];  /* 蓝牙设备名称 */
 
 #endif /* APP_CONFIG_H */
