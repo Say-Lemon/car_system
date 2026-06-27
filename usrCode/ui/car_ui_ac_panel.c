@@ -40,9 +40,9 @@ static const char *mode_names[] = {
 
 /* ---- 前向声明 ---- */
 static void update_mode_btn_styles(void);
-static void on_temp_changed(lv_event_t *e);
-static void on_fan_changed(lv_event_t *e);
-static void on_mode_clicked(lv_event_t *e);
+static void on_temp_changed_cb(lv_event_t *e);
+static void on_fan_changed_cb(lv_event_t *e);
+static void on_mode_clicked_cb(lv_event_t *e);
 
 /* ---- 辅助：创建样式滑块 ---- */
 static void style_ac_slider(lv_obj_t *slider)
@@ -120,7 +120,7 @@ void car_ui_ac_panel_create(lv_obj_t *parent)
     lv_slider_set_value(temp_slider, g_ac_temperature, LV_ANIM_OFF);
     lv_obj_align(temp_slider, LV_ALIGN_BOTTOM_MID, 0, 0);
     style_ac_slider(temp_slider);
-    lv_obj_add_event_cb(temp_slider, on_temp_changed, LV_EVENT_VALUE_CHANGED, NULL);
+    lv_obj_add_event_cb(temp_slider, on_temp_changed_cb, LV_EVENT_VALUE_CHANGED, NULL);
 
     /* 温度范围标签 */
     lv_obj_t *t_lo = lv_label_create(temp_section);
@@ -157,7 +157,7 @@ void car_ui_ac_panel_create(lv_obj_t *parent)
     lv_slider_set_value(fan_slider, g_ac_fan_speed, LV_ANIM_OFF);
     lv_obj_align(fan_slider, LV_ALIGN_BOTTOM_MID, 0, 0);
     style_ac_slider(fan_slider);
-    lv_obj_add_event_cb(fan_slider, on_fan_changed, LV_EVENT_VALUE_CHANGED, NULL);
+    lv_obj_add_event_cb(fan_slider, on_fan_changed_cb, LV_EVENT_VALUE_CHANGED, NULL);
 
     /* 风量范围标签 */
     lv_obj_t *f_lo = lv_label_create(fan_section);
@@ -202,7 +202,7 @@ void car_ui_ac_panel_create(lv_obj_t *parent)
 
     for (int i = 0; i < 4; i++) {
         mode_btns[i] = create_mode_btn(grid, mode_names[i]);
-        lv_obj_add_event_cb(mode_btns[i], on_mode_clicked,
+        lv_obj_add_event_cb(mode_btns[i], on_mode_clicked_cb,
                             LV_EVENT_CLICKED, (void *)(intptr_t)i);
     }
 
@@ -217,21 +217,21 @@ void car_ui_ac_panel_create(lv_obj_t *parent)
  *  回调
  * ================================================================ */
 
-static void on_temp_changed(lv_event_t *e)
+static void on_temp_changed_cb(lv_event_t *e)
 {
     (void)e;
     g_ac_temperature = (int)lv_slider_get_value(temp_slider);
     lv_label_set_text_fmt(temp_label, "温度  %d °C", g_ac_temperature);
 }
 
-static void on_fan_changed(lv_event_t *e)
+static void on_fan_changed_cb(lv_event_t *e)
 {
     (void)e;
     g_ac_fan_speed = (int)lv_slider_get_value(fan_slider);
     lv_label_set_text_fmt(fan_label, "风量  %d 档", g_ac_fan_speed);
 }
 
-static void on_mode_clicked(lv_event_t *e)
+static void on_mode_clicked_cb(lv_event_t *e)
 {
     g_ac_mode = (int)(intptr_t)lv_event_get_user_data(e);
     update_mode_btn_styles();

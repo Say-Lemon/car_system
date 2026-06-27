@@ -73,7 +73,7 @@ int g_ac_fan_speed   = 3;    /* 1-7 档 */
 int g_ac_mode         = 0;   /* 0=吹面 1=吹脚 2=吹面+吹脚 3=除霜 */
 
 /* 全局触摸回调：记录空闲时间 + 熄屏唤醒 */
-static void on_global_input(lv_event_t *e)
+static void on_global_input_cb(lv_event_t *e)
 {
     (void)e;
     if (car_ui_is_standby()) car_ui_standby_deactivate();
@@ -127,7 +127,7 @@ int main(void)
     settings_backlight_apply();  /* 应用保存的亮度到硬件 */
 
     /* ---- 8c. 注册全局触摸事件（自动熄屏空闲检测） ---- */
-    lv_obj_add_event_cb(lv_scr_act(), on_global_input, LV_EVENT_PRESSED, NULL);
+    lv_obj_add_event_cb(lv_scr_act(), on_global_input_cb, LV_EVENT_PRESSED, NULL);
 
     /* ---- 9. 创建车机主界面 ---- */
     car_ui_create_dashboard();

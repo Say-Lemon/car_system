@@ -43,10 +43,10 @@ static const int    off_values[] = {0, 30, 60, 300};
 static int off_sel = 0;
 
 /* ---- 前向声明 ---- */
-static void on_save(lv_event_t *e);
-static void on_vol_changed(lv_event_t *e);
-static void on_bri_changed(lv_event_t *e);
-static void on_off_clicked(lv_event_t *e);
+static void on_save_cb(lv_event_t *e);
+static void on_vol_changed_cb(lv_event_t *e);
+static void on_bri_changed_cb(lv_event_t *e);
+static void on_off_clicked_cb(lv_event_t *e);
 static void update_off_btn_styles(void);
 
 /* ---- 辅助：创建标签 ---- */
@@ -111,7 +111,7 @@ void settings_ui_create(lv_obj_t *parent)
     lv_slider_set_value(vol_slider, g_sys_volume, LV_ANIM_OFF);
     lv_obj_align(vol_slider, LV_ALIGN_BOTTOM_MID, 0, -40);
     style_slider(vol_slider);
-    lv_obj_add_event_cb(vol_slider, on_vol_changed, LV_EVENT_VALUE_CHANGED, NULL);
+    lv_obj_add_event_cb(vol_slider, on_vol_changed_cb, LV_EVENT_VALUE_CHANGED, NULL);
 
     vol_label = lv_label_create(row_vol);
     lv_label_set_text_fmt(vol_label, "%d", g_sys_volume);
@@ -134,7 +134,7 @@ void settings_ui_create(lv_obj_t *parent)
     lv_slider_set_value(bri_slider, g_sys_brightness, LV_ANIM_OFF);
     lv_obj_align(bri_slider, LV_ALIGN_BOTTOM_MID, 0, -40);
     style_slider(bri_slider);
-    lv_obj_add_event_cb(bri_slider, on_bri_changed, LV_EVENT_VALUE_CHANGED, NULL);
+    lv_obj_add_event_cb(bri_slider, on_bri_changed_cb, LV_EVENT_VALUE_CHANGED, NULL);
 
     bri_label = lv_label_create(row_bri);
     lv_label_set_text_fmt(bri_label, "%d", g_sys_brightness);
@@ -177,7 +177,7 @@ void settings_ui_create(lv_obj_t *parent)
         lv_obj_center(lbl);
         lv_obj_set_style_text_color(lbl, lv_color_white(), 0);
         APPLY_ZH_18(lbl);
-        lv_obj_add_event_cb(off_btns[i], on_off_clicked,
+        lv_obj_add_event_cb(off_btns[i], on_off_clicked_cb,
                             LV_EVENT_CLICKED, (void *)(intptr_t)i);
     }
 
@@ -219,7 +219,7 @@ void settings_ui_create(lv_obj_t *parent)
     lv_obj_center(sl);
     lv_obj_set_style_text_color(sl, lv_color_white(), 0);
     APPLY_ZH_18(sl);
-    lv_obj_add_event_cb(btn_save, on_save, LV_EVENT_CLICKED, NULL);
+    lv_obj_add_event_cb(btn_save, on_save_cb, LV_EVENT_CLICKED, NULL);
 
     /* 保存提示 */
     save_hint_label = lv_label_create(settings_cont);
@@ -236,7 +236,7 @@ void settings_ui_create(lv_obj_t *parent)
  *  回调
  * ================================================================ */
 
-static void on_vol_changed(lv_event_t *e)
+static void on_vol_changed_cb(lv_event_t *e)
 {
     (void)e;
     g_sys_volume = (int)lv_slider_get_value(vol_slider);
@@ -279,7 +279,7 @@ void settings_backlight_apply(void)
     }
 }
 
-static void on_bri_changed(lv_event_t *e)
+static void on_bri_changed_cb(lv_event_t *e)
 {
     (void)e;
     g_sys_brightness = (int)lv_slider_get_value(bri_slider);
@@ -287,7 +287,7 @@ static void on_bri_changed(lv_event_t *e)
     settings_backlight_apply();
 }
 
-static void on_off_clicked(lv_event_t *e)
+static void on_off_clicked_cb(lv_event_t *e)
 {
     off_sel = (int)(intptr_t)lv_event_get_user_data(e);
     g_auto_screen_off_sec = off_values[off_sel];
@@ -309,7 +309,7 @@ static void update_off_btn_styles(void)
     }
 }
 
-static void on_save(lv_event_t *e)
+static void on_save_cb(lv_event_t *e)
 {
     (void)e;
     settings_config_save();

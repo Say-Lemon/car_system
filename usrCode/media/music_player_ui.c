@@ -57,17 +57,17 @@ void music_player_ui_close(void)
 }
 
 /* ---- 回调 ---- */
-static void on_play_pause(lv_event_t *e)
+static void on_play_pause_cb(lv_event_t *e)
 {
     (void)e;
     music_toggle_pause();
     lv_label_set_text(play_btn_label,
         g_music_paused ? LV_SYMBOL_PLAY : LV_SYMBOL_PAUSE);
 }
-static void on_prev(lv_event_t *e)  { (void)e; music_play_prev(); }
-static void on_next(lv_event_t *e)  { (void)e; music_play_next(); }
-static void on_close(lv_event_t *e) { (void)e; music_player_ui_close(); }
-static void on_vol_changed(lv_event_t *e)
+static void on_prev_cb(lv_event_t *e)  { (void)e; music_play_prev(); }
+static void on_next_cb(lv_event_t *e)  { (void)e; music_play_next(); }
+static void on_close_cb(lv_event_t *e) { (void)e; music_player_ui_close(); }
+static void on_vol_changed_cb(lv_event_t *e)
 {
     (void)e;
     int v = (int)lv_slider_get_value(vol_slider);
@@ -75,7 +75,7 @@ static void on_vol_changed(lv_event_t *e)
     music_set_volume(v);
     car_ui_dashboard_update_volume(v);
 }
-static void on_seek(lv_event_t *e)
+static void on_seek_cb(lv_event_t *e)
 {
     (void)e;
     if (!g_music_playing || g_music_time_length <= 0) return;
@@ -83,7 +83,7 @@ static void on_seek(lv_event_t *e)
     /* seek <val> 1 = 绝对百分比，无需暂停读写线程（无竞态风险） */
     music_send_cmd("seek %d 1\n", pct);
 }
-static void on_playlist_click(lv_event_t *e)
+static void on_playlist_click_cb(lv_event_t *e)
 {
     int idx = (int)(intptr_t)lv_event_get_user_data(e);
     if (idx < 0 || idx >= g_music_count) return;
@@ -144,7 +144,7 @@ lv_obj_t *music_player_ui_create(void)
     lv_label_set_text(cl, LV_SYMBOL_CLOSE);
     lv_obj_center(cl);
     lv_obj_set_style_text_color(cl, lv_color_white(), 0);
-    lv_obj_add_event_cb(cb, on_close, LV_EVENT_CLICKED, NULL);
+    lv_obj_add_event_cb(cb, on_close_cb, LV_EVENT_CLICKED, NULL);
 
     /* 歌名 */
     song_label = lv_label_create(card);
@@ -180,7 +180,7 @@ lv_obj_t *music_player_ui_create(void)
     lv_obj_set_style_bg_color(prog_slider, lv_color_hex(0xFF6D00), LV_PART_KNOB);
     lv_obj_set_style_width(prog_slider, 10, LV_PART_KNOB);
     lv_obj_set_style_height(prog_slider, 10, LV_PART_KNOB);
-    lv_obj_add_event_cb(prog_slider, on_seek, LV_EVENT_RELEASED, NULL);
+    lv_obj_add_event_cb(prog_slider, on_seek_cb, LV_EVENT_RELEASED, NULL);
 
     /* 时间 */
     time_label = lv_label_create(card);
@@ -200,14 +200,14 @@ lv_obj_t *music_player_ui_create(void)
     lv_obj_set_flex_align(row, LV_FLEX_ALIGN_SPACE_EVENLY, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
     lv_obj_t *bp = make_icon_btn(row, LV_SYMBOL_PREV, 48, false);
-    lv_obj_add_event_cb(bp, on_prev, LV_EVENT_CLICKED, NULL);
+    lv_obj_add_event_cb(bp, on_prev_cb, LV_EVENT_CLICKED, NULL);
 
     lv_obj_t *bk = make_icon_btn(row, LV_SYMBOL_PLAY, 56, true);
     play_btn_label = lv_obj_get_child(bk, 0);
-    lv_obj_add_event_cb(bk, on_play_pause, LV_EVENT_CLICKED, NULL);
+    lv_obj_add_event_cb(bk, on_play_pause_cb, LV_EVENT_CLICKED, NULL);
 
     lv_obj_t *bn = make_icon_btn(row, LV_SYMBOL_NEXT, 48, false);
-    lv_obj_add_event_cb(bn, on_next, LV_EVENT_CLICKED, NULL);
+    lv_obj_add_event_cb(bn, on_next_cb, LV_EVENT_CLICKED, NULL);
 
     /* 音量 */
     vol_slider = lv_slider_create(card);
@@ -216,7 +216,7 @@ lv_obj_t *music_player_ui_create(void)
     lv_slider_set_range(vol_slider, 0, 100);
     lv_slider_set_value(vol_slider, g_sys_volume, LV_ANIM_OFF);
     lv_obj_align(vol_slider, LV_ALIGN_BOTTOM_MID, 0, -28);
-    lv_obj_add_event_cb(vol_slider, on_vol_changed, LV_EVENT_VALUE_CHANGED, NULL);
+    lv_obj_add_event_cb(vol_slider, on_vol_changed_cb, LV_EVENT_VALUE_CHANGED, NULL);
 
     lv_obj_t *vl = lv_label_create(card);
     lv_label_set_text(vl, "音量");
@@ -248,7 +248,7 @@ lv_obj_t *music_player_ui_create(void)
         const char *name = strrchr(full, '/');
         name = name ? name + 1 : full;
         lv_obj_t *btn = lv_list_add_btn(list, NULL, name);
-        lv_obj_add_event_cb(btn, on_playlist_click, LV_EVENT_CLICKED,
+        lv_obj_add_event_cb(btn, on_playlist_click_cb, LV_EVENT_CLICKED,
                             (void *)(intptr_t)i);
         APPLY_ZH_FONT(btn);
     }

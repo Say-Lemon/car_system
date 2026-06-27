@@ -175,7 +175,7 @@ void car_ui_sidebar_create(lv_obj_t *parent)
 
 static lv_obj_t *standby_overlay = NULL;
 
-static void on_standby_click(lv_event_t *e)
+static void on_standby_click_cb(lv_event_t *e)
 {
     (void)e;
     car_ui_standby_deactivate();
@@ -195,7 +195,7 @@ void car_ui_standby_activate(void)
     lv_obj_set_style_border_width(standby_overlay, 0, 0);
     lv_obj_clear_flag(standby_overlay, LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_add_flag(standby_overlay, LV_OBJ_FLAG_CLICKABLE);
-    lv_obj_add_event_cb(standby_overlay, on_standby_click, LV_EVENT_CLICKED, NULL);
+    lv_obj_add_event_cb(standby_overlay, on_standby_click_cb, LV_EVENT_CLICKED, NULL);
 
     lv_obj_t *hint = lv_label_create(standby_overlay);
     lv_label_set_text(hint, "待机中\n点击屏幕唤醒");
