@@ -206,3 +206,32 @@ if (g_music_eof) {
 
 ### 任务 3：对比音乐和视频播放器
 打开 `media/vp_playback_controller.c`，对比音乐和视频播放器的 fork+pipe 实现。找出相同点和不同点。
+
+
+学习心得:
+1.  用 双匿名管道 通信比 匿名管道popen+命名管道FIFO 好
+
+2. 进程创建 fork+pipe+close+dup2+exec 五件套的标准用法。复习一下：
+ `pipe()` 创建通信匿名管道
+ `fork()` 创建子进程
+ `close()` 关闭无用的读/写端
+ `dup2()` 重定向标准输入/输出到管道
+ `execlp()` 执行新程序
+
+3.  当前项目3 用的是双匿名管道
+因为 mplayer 只认 stdin/stdout。子进程(mplayer)需要将管道复制到stdin/stdout:
+dup2(in_pipe[0],  STDIN_FILENO);   // fd 3 复制到 fd 0 (stdin)
+dup2(out_pipe[1], STDOUT_FILENO);  // fd 6 复制到 fd 1 (stdout)
+
+4. 原来项目2（视频播放器）用的是匿名管道popen+命名管道FIFO
+写入（发送命令）→ FIFO 命名管道，不是 stdin
+snprintf(cmd, sizeof(cmd),
+         "mplayer -quiet -slave -zoom -x 680 -y 362 -input file=%s \"%s\"",
+         FIFO_PATH, video_path[video_index]);
+关键参数是 -input file=/tmp/mplayer_control，它告诉 MPlayer：从命名管道 FIFO 读取 slave 命令，而不是从 stdin 读。
+
+读取（接收应答）→ stdout 匿名管道
+fp_mplayer = popen(cmd, "r");   // "r" = 捕获 stdout
+popen(cmd, "r") 创建了一个匿名管道，连接 MPlayer 的 stdout。读线程通过 fgets 读取 MPlayer 输出的 ANS_* 应答行
+本质上就是 dup2(pipe[1], STDOUT_FILENO) 把子进程的 stdout 重定向到了管道，只是 popen() 帮你把这些步骤封装好了
+

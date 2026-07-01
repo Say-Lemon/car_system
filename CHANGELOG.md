@@ -445,6 +445,46 @@
 
 ---
 
+## 2026-06-27 — Phase 8 续: 倒车影像模块
+
+### V4L2 摄像头集成
+- 创建 `media/camera_ui.c/h` — 倒车影像模块
+- 参考资料 `camera_1023_yuv_v4l2` 的 V4L2 + JPEG 解码 + framebuffer 直接写方案
+- 摄像头 `/dev/video7`，YUYV→JPEG→libjpeg 解码→`show_video_data` 写 fb0
+- 640×480 画面居中显示在 800×480 屏幕（左右 80px 黑边）
+
+### 引导线叠加
+- 三段分段颜色引导线：下红→中黄→上绿，20px 线宽
+- 等腰梯形形状：左线 (80,470)→(280,260)，右线 (720,470)→(520,260)
+- **双缓冲消除闪烁**：重定向 `mmap_fd` 到堆内存 `back_buf`，摄像头帧+引导线全部绘制完成后再 `memcpy` 推送到 fb0
+- 触摸退出用全屏透明 LVGL 遮罩拦截，防止穿透到侧边栏按钮
+- 退出时清屏 `memset` + `lv_obj_invalidate` 强制 LVGL 重绘
+
+### 新增文件
+- `media/camera_ui.c/h` — 倒车影像模块
+- `media/lcd.c` — LCD 驱动（framebuffer 操作 + JPEG 显示）
+- `media/jpeg/` — 参考代码的 libjpeg + V4L2 库（.so + .h）
+
+### 修改文件
+- `ui/app_menu_ui.c` — 新增"倒车影像"卡片
+- `Makefile` — 链接 `libapi_v4l2_arm1` + `libjpeg`
+- `usrCode/font_zh_cn_18.c` — 补字「倒」「影」
+
+---
+
+## 2026-06-27 — Phase 8 续: 代码审查与清理
+
+### FIFO 残留清理
+- `g_fd_music_fifo` → `g_fd_music_pipe`（变量名反映实际架构）
+- 删除 `app_config.h` 中无用的 `MUSIC_FIFO_PATH` / `VIDEO_FIFO_PATH` 宏
+- 删除整个 `vp_config.h`（全部内容与 `app_config.h` 重复）
+- `app_config.h` 中 `#include <sys/stat.h>` 注释从 `mkfifo` 改为 `stat`
+
+### 回调命名统一
+- 16 个回调函数统一加 `_cb` 后缀
+
+---
+
 ## 文件清单
 
 ```

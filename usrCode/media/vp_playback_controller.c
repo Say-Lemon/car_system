@@ -15,7 +15,6 @@
 #include "vp_media_catalog.h"
 #include "vp_playback_io_sync.h"
 #include "vp_playback_monitor.h"
-#include "vp_config.h"
 #include "app_config.h"
 #include "music_controller.h"
 #include <pthread.h>

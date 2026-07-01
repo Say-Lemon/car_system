@@ -20,7 +20,7 @@
 #include <signal.h>
 #include <stdbool.h>
 #include <fcntl.h>          /* open, O_RDWR */
-#include <sys/stat.h>       /* mkfifo */
+#include <sys/stat.h>       /* stat */
 #include <dirent.h>         /* opendir, readdir */
 #include <time.h>
 #include <math.h>
@@ -39,9 +39,6 @@
 #define MUSIC_BAR_H   310    /* 右下音乐栏高度 */
 #define ZONE_H        460    /* 左侧/中间区域总高度 (=480-2*10) */
 
-/* ========== FIFO 路径（Phase 2+ 音乐/视频播放） ========== */
-#define MUSIC_FIFO_PATH  "/tmp/music_control"
-#define VIDEO_FIFO_PATH  "/tmp/video_control"
 
 /* ========== 媒体文件扫描路径 ========== */
 #define MUSIC_DIR        "/mmcblk/music"

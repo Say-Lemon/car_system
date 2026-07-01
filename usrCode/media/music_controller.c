@@ -18,7 +18,7 @@
 
 /* ---- 全局变量 ---- */
 FILE *g_fp_music_mplayer  = NULL;
-int   g_fd_music_fifo     = -1;
+int   g_fd_music_pipe     = -1;
 int   g_music_index       = 0;
 int   g_music_percent_pos = 0;
 float g_music_time_pos    = 0.0f;
@@ -59,16 +59,16 @@ void music_set_volume(int ui_vol)
     music_send_cmd("volume %d 1\n", mp_vol);
 }
 
-/* ---- 发送 FIFO 命令 ---- */
+/* ---- 发送管道命令 ---- */
 void music_send_cmd(const char *fmt, ...)
 {
-    if (g_fd_music_fifo < 0) return;
+    if (g_fd_music_pipe < 0) return;
     char buf[256];
     va_list ap;
     va_start(ap, fmt);
     vsnprintf(buf, sizeof(buf), fmt, ap);
     va_end(ap);
-    write(g_fd_music_fifo, buf, strlen(buf));
+    write(g_fd_music_pipe, buf, strlen(buf));
 }
 
 /* ---- 停止 mplayer ---- */
@@ -78,7 +78,7 @@ void music_stop_all(void)
     music_mplayer_pid = -1;
     g_music_playing = false;
     g_music_paused  = false;
-    g_fd_music_fifo = -1;
+    g_fd_music_pipe = -1;
     g_fp_music_mplayer = NULL;
 }
 
@@ -189,7 +189,7 @@ void *music_launch_thread(void *arg)
 
     close(in_pipe[0]);  close(out_pipe[1]);
     music_mplayer_pid = pid;
-    g_fd_music_fifo = in_pipe[1];
+    g_fd_music_pipe = in_pipe[1];
     g_fp_music_mplayer = fdopen(out_pipe[0], "r");
 
     music_send_cmd("get_time_length\n");

@@ -9,6 +9,7 @@
 #include "car_ui_dashboard.h"
 #include "car_ui_ac_panel.h"
 #include "settings_ui.h"
+#include "camera_ui.h"
 #include "music_player_ui.h"
 #include "vp_player_ui.h"
 #include "app_config.h"
@@ -66,6 +67,13 @@ static void on_settings(lv_event_t *e)
     settings_ui_open();         /* 打开设置面板 */
 }
 
+static void on_reverse(lv_event_t *e)
+{
+    (void)e;
+    app_menu_ui_toggle();       /* 切回仪表盘 */
+    camera_ui_open();           /* 打开倒车影像 */
+}
+
 /* ================================================================
  *  创建菜单面板
  * ================================================================ */
@@ -103,6 +111,7 @@ void app_menu_ui_create(lv_obj_t *parent)
     create_app_card(grid, "乐",  "音乐播放器", on_music);
     create_app_card(grid, "视",  "视频播放器", on_video);
     create_app_card(grid, "设",  "系统设置",   on_settings);
+    create_app_card(grid, "倒",  "倒车影像",   on_reverse);
 
     /* ---- 初始隐藏 ---- */
     lv_obj_add_flag(menu_cont, LV_OBJ_FLAG_HIDDEN);

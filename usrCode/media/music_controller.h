@@ -20,7 +20,7 @@
 
 /* ---- 全局状态 ---- */
 extern FILE *g_fp_music_mplayer;    /* fork+pipe stdout 管道 */
-extern int   g_fd_music_fifo;       /* FIFO 文件描述符 */
+extern int   g_fd_music_pipe;       /* 管道写端 fd（发命令给 mplayer） */
 extern int   g_music_index;         /* 当前播放索引 */
 extern int   g_music_percent_pos;   /* 0-100 */
 extern float g_music_time_pos;      /* 秒 */

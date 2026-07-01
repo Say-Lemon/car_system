@@ -16,7 +16,6 @@
  */
 
 #include "vp_player_ui.h"
-#include "vp_config.h"
 #include "vp_media_catalog.h"
 #include "vp_playback_controller.h"
 #include "vp_playback_monitor.h"
