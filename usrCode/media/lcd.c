@@ -1,5 +1,5 @@
 #include <stdio.h>   	//printf scanf
-#include <fcntl.h>		//open write read lseek close
+#include <fcntl.h>		//open write read lseek close  	 
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -19,7 +19,7 @@ int *mmap_fd;
 
 
 
-//��ʼ��LCD
+//初始化LCD
 int lcd_open(void)
 {
 	lcd_fd = open("/dev/fb0", O_RDWR);
@@ -34,27 +34,27 @@ int lcd_open(void)
 
 int mmap_lcd(void)
 {
-	mmap_fd  = (int *)mmap(	NULL, 					//ӳ�����Ŀ�ʼ��ַ������ΪNULLʱ��ʾ��ϵͳ����ӳ��������ʼ��ַ
-									FB_SIZE, 				//ӳ�����ĳ���
-									PROT_READ|PROT_WRITE, 	//���ݿ��Ա���ȡ��д��
-									MAP_SHARED,				//�����ڴ�
-									lcd_fd, 				//��Ч���ļ�������
-									0						//��ӳ��������ݵ����
+	mmap_fd  = (int *)mmap(	NULL, 					//映射区的开始地址，设置为NULL时表示由系统决定映射区的起始地址
+									FB_SIZE, 				//映射区的长度
+									PROT_READ|PROT_WRITE, 	//内容可以被读取和写入
+									MAP_SHARED,				//共享内存
+									lcd_fd, 				//有效的文件描述词
+									0						//被映射对象内容的起点
 								);
 	return lcd_fd;
 
 }
 
-//LCD����
+//LCD画点
 void lcd_draw_point(unsigned int x,unsigned int y, unsigned int color)
 {
 	*(mmap_fd+y*800+x)=color;
 }
 
-//��ʾ����ͷ��׽
+//显示摄像头捕捉
 int show_video_data(unsigned int x,unsigned int y,char *pjpg_buf,unsigned int jpg_buf_size)  
 {
-	/*���������󣬴���������*/
+	/*定义解码对象，错误处理对象*/
 	struct 	jpeg_decompress_struct 	cinfo;
 	struct 	jpeg_error_mgr 			jerr;	
 	
@@ -78,25 +78,25 @@ int show_video_data(unsigned int x,unsigned int y,char *pjpg_buf,unsigned int jp
 		
 	pjpg = pjpg_buf;
 
-	/*ע���������*/
+	/*注册出错处理*/
 	cinfo.err = jpeg_std_error(&jerr);
 
-	/*��������*/
+	/*创建解码*/
 	jpeg_create_decompress(&cinfo);
 
-	/*ֱ�ӽ����ڴ�����*/		
+	/*直接解码内存数据*/		
 	jpeg_mem_src(&cinfo,pjpg,jpg_buf_size);
 	
-	/*���ļ�ͷ*/
+	/*读文件头*/
 	jpeg_read_header(&cinfo, TRUE);
 
-	/*��ʼ����*/
+	/*开始解码*/
 	jpeg_start_decompress(&cinfo);	
 	
 	x_e	= x_s+cinfo.output_width;
 	y_e	= y  +cinfo.output_height;	
 
-	/* Decode and display: memcpy entire rows instead of per-pixel write */
+	/* 解码并显示 — 整行 memcpy 替代逐像素写入 */
 	{
 		static unsigned int row_buf[800];
 		unsigned int *dst;
@@ -118,17 +118,18 @@ int show_video_data(unsigned int x,unsigned int y,char *pjpg_buf,unsigned int jp
 		}
 	}
 
-	/* Finish decompression */
+	/*解码完成*/
 	jpeg_finish_decompress(&cinfo);
 	jpeg_destroy_decompress(&cinfo);
 
 	return 0;
 }
 
-//��ʾ����jpgͼƬ
+//显示正常jpg图片
+//显示正常jpg图片
 int lcd_draw_jpg(unsigned int x,unsigned int y,const char *pjpg_path)  
 {
-	/*���������󣬴���������*/
+	/*定义解码对象，错误处理对象*/
 	struct 	jpeg_decompress_struct 	cinfo;
 	struct 	jpeg_error_mgr 			jerr;	
 	
@@ -150,7 +151,7 @@ int lcd_draw_jpg(unsigned int x,unsigned int y,const char *pjpg_path)
 
 	if(pjpg_path!=NULL)
 	{
-		/* ����jpg��Դ��Ȩ�޿ɶ���д */	
+		/* 申请jpg资源，权限可读可写 */	
 		jpg_fd=open(pjpg_path,O_RDWR);
 		
 		if(jpg_fd == -1)
@@ -160,50 +161,50 @@ int lcd_draw_jpg(unsigned int x,unsigned int y,const char *pjpg_path)
 		   return -1;	
 		}	
 		
-		/* ��ȡjpg�ļ��Ĵ�С */
+		/* 获取jpg文件的大小 */
 		jpg_size=file_size_get(pjpg_path);	
 		if(jpg_size<3000)
 			return -1;
 		
-		/* Ϊjpg�ļ������ڴ�ռ� */	
+		/* 为jpg文件申请内存空间 */	
 		pjpg = malloc(jpg_size);
 
-		/* ��ȡjpg�ļ��������ݵ��ڴ� */		
+		/* 读取jpg文件所有内容到内存 */		
 		read(jpg_fd,pjpg,jpg_size);
 	}
 	else
 		return -1;
 
-	/*ע���������*/
+	/*注册出错处理*/
 	cinfo.err = jpeg_std_error(&jerr);
 
-	/*��������*/
+	/*创建解码*/
 	jpeg_create_decompress(&cinfo);
 
-	/*ֱ�ӽ����ڴ�����*/		
+	/*直接解码内存数据*/		
 	jpeg_mem_src(&cinfo,pjpg,jpg_size);
 	
-	/*���ļ�ͷ*/
+	/*读文件头*/
 	jpeg_read_header(&cinfo, TRUE);
 
-	/*��ʼ����*/
+	/*开始解码*/
 	jpeg_start_decompress(&cinfo);	
 	
 	
 	x_e	= x_s +cinfo.output_width;
 	y_e	= y  +cinfo.output_height;	
 
-	/*����������*/
+	/*读解码数据*/
 	while(cinfo.output_scanline < cinfo.output_height )
 	{		
 		pcolor_buf = g_color_buf;
 		
-		/* ��ȡjpgһ�е�rgbֵ */
+		/* 读取jpg一行的rgb值 */
 		jpeg_read_scanlines(&cinfo,&pcolor_buf,1);
 		
 		for(i=0; i<cinfo.output_width; i++)
 		{
-			/* ����ʾ�Ĳ��� */
+			/* 不显示的部分 */
 			/* if(y_n>g_jpg_in_jpg_y && y_n<g_jpg_in_jpg_y+240)
 				if(x_n>g_jpg_in_jpg_x && x_n<g_jpg_in_jpg_x+320)
 				{
@@ -212,12 +213,12 @@ int lcd_draw_jpg(unsigned int x,unsigned int y,const char *pjpg_path)
 					continue;
 				} */
 				
-			/* ��ȡrgbֵ */
+			/* 获取rgb值 */
 			color = 		*(pcolor_buf+2);
 			color = color | *(pcolor_buf+1)<<8;
 			color = color | *(pcolor_buf)<<16;	
 			
-			/* ��ʾ���ص� */
+			/* 显示像素点 */
 			lcd_draw_point(x_n,y_n,color);
 			
 			pcolor_buf +=3;
@@ -225,23 +226,23 @@ int lcd_draw_jpg(unsigned int x,unsigned int y,const char *pjpg_path)
 			x_n++;
 		}
 		
-		/* ���� */
+		/* 换行 */
 		y_n++;			
 		
 		x_n = x_s;
 		
 	}		
 			
-	/*�������*/
+	/*解码完成*/
 	jpeg_finish_decompress(&cinfo);
 	jpeg_destroy_decompress(&cinfo);
 
 	if(pjpg_path!=NULL)
 	{
-		/* �ر�jpg�ļ� */
+		/* 关闭jpg文件 */
 		close(jpg_fd);	
 		
-		/* �ͷ�jpg�ļ��ڴ�ռ� */
+		/* 释放jpg文件内存空间 */
 		free(pjpg);		
 	}
 
@@ -249,18 +250,18 @@ int lcd_draw_jpg(unsigned int x,unsigned int y,const char *pjpg_path)
 }
 
 
-//LCD�ر�
+//LCD关闭
 void lcd_close(void)
 {
 	
-	/* ȡ���ڴ�ӳ�� */
+	/* 取消内存映射 */
 	munmap(mmap_fd, FB_SIZE);
 	
-	/* �ر�LCD�豸 */
+	/* 关闭LCD设备 */
 	close(lcd_fd);
 }
 
-//��ȡjpg�ļ��Ĵ�С
+//获取jpg文件的大小
 unsigned long file_size_get(const char *pfile_path)
 {
 	unsigned long filesize = -1;	
